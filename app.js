@@ -34,24 +34,20 @@ server.listen(port,function(e){
 io.on('connection', function(client) {
     client.on('log-in', function(clientData) {
         data.getUser(clientData).then(function(user){
-            console.log(user);
-            client.emit('messages', user.toString());
+            if(user && user.username){
+                client.emit('log-in', user);
+            }
         },function (err) {
-            console.log(user);
-            client.emit('messages', 'error');
+            client.emit('form-error', {form:'log-in','text':err.text});
         });
 
     });
 
     client.on('register', function(clientData) {
-        data.saveUser();
-        client.emit('uspeshna reg');
-
         var user = data.saveUser(clientData).then(function(user){
             client.emit('messages', user.toString());
         },function (err) {
-            console.log(err);
-            client.emit('messages', 'error:'+err.toString());
+            client.emit('form-error', {form:'register','text':err.text});
         });
 
     });

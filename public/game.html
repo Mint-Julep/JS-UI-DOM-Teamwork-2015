@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bomberman</title>
+    <link rel="shortcut icon" type="image/png" href="assets/img/icons/favicon.png"/>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="gamecontainer">
+    <canvas id="gamecanvas" width="800" height="600" class="gamelayer"></canvas>
+    <div id="scorescreen" class="gamelayer">
+        <img id="togglemusic" src="assets/img/icons/sound.png">
+        <img src="assets/img/icons/prev.png">
+        <span id="score"> Score: 0</span>
+    </div>
+    <div id="gamestartscreen" class="gamelayer">
+        <img src="assets/img/icons/play.png" alt="Play Game" onclick="game.showLevelScreen()"><br>
+        <img src="assets/img/icons/settings.png" alt="Settings">
+    </div>
+    <div id="levelselectscreen" class="gamelayer"></div>
+    <div id="loadingscreen" class="gamelayer">
+        <div id="loadingmessage"></div>
+    </div>
+    <div id="endingscreen" class="gamelayer">
+        <div>
+            <p id="endingmessage"> The Level Is Over Message </p>
+
+            <p id="playcurrentlevel"><img src="assets/img/icons/prev.png"> Replay Current Level </p>
+
+            <p id="playnextlevel"><img src="assets/img/icons/next.png"> Play Next Level </p>
+
+            <p id="showLevelScreen"><img src="assets/img/icons/return.png"> Return to Level Screen </p>
+        </div>
+    </div>
+</div>
+
+<script src="assets/js/jquery-1.11.3.min.js"></script>
+<script src="assets/js/game.js"></script>
+<script src="/assets/js/jquery-1.11.3.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    var socket = io.connect('http://http://192.168.0.101:3000/');
+
+    var currentX = 20,
+            currentY = 20,
+            speedIncrease=3;
+
+    var currentSpeed = {
+        x:0,
+        y:0
+    };
+    var pressedKeys = {
+        down:false,
+        up:false,
+        left:false,
+        right:false
+    }
+
+    socket.on('connect', function (data) {
+        socket.emit('join', 'User connected');
+    });
+
+    $('#log-in').on('click', function () {
+        socket.emit('log-in', {
+            name: $('input[name="user"]').val(),
+            pass: $('input[name="pass"]').val()
+        });
+    });
+
+    $('#register').on('click', function () {
+        socket.emit('register', {
+            name: $('input[name="user"]').val(),
+            pass: $('input[name="pass"]').val()
+        });
+    });
+
+    var canvas = document.getElementById('canvas').getContext('2d');
+    $('#canvas').on('click', function (e) {
+        canvas.fillStyle="#b04";
+        canvas.fillRect(e.offsetX, e.offsetY, 5, 5);
+        canvas.fillStyle="#000";
+        socket.emit('canvas', {
+            x: e.offsetX,
+            y: e.offsetY
+        });
+    });
+
+    $(document).keydown(function(e){
+        var newX=currentX
+                ,newY=currentY;
+
+        if(e.which == 97 || e.which == 65) {
+            //left pressed
+            pressedKeys.left=true;
+        } else if(e.which == 100 || e.which == 68){
+            //right pressed
+            pressedKeys.right=true;
+        }else if(e.which == 83 || e.which == 68){
+            //down pressed
+            pressedKeys.down=true;
+        } else if(e.which == 87 || e.which == 68){
+            //up pressed
+            pressedKeys.up=true;
+        }
+    });
+
+    $(document).keyup(function(e){
+        if(e.which == 97 || e.which == 65) {
+            pressedKeys.left=false;
+        } else if(e.which == 100 || e.which == 68){
+            pressedKeys.right=false;
+        }else if(e.which == 83 || e.which == 68){
+            pressedKeys.down=false;
+        } else if(e.which == 87 || e.which == 68){
+            pressedKeys.up=false;
+        }
+    });
+
+    setInterval(function(){
+
+        redrawPlayer();
+        checkPressedKeys();
+    } ,40);
+
+    function checkPressedKeys(){
+        if(pressedKeys.left){
+            currentSpeed.x=-speedIncrease;
+        }else{
+            currentSpeed.x=reduceSpeed(currentSpeed.x)
+        }
+
+        if(pressedKeys.right){
+            currentSpeed.x=+speedIncrease;
+        }else{
+            currentSpeed.x=reduceSpeed(currentSpeed.x)
+        }
+
+        if(pressedKeys.down){
+            currentSpeed.y=+speedIncrease;
+        }else{
+            currentSpeed.y=reduceSpeed(currentSpeed.y)
+        }
+
+        if(pressedKeys.up){
+            currentSpeed.y=-speedIncrease;
+        }else{
+            currentSpeed.y=reduceSpeed(currentSpeed.y)
+        }
+    }
+
+
+    function redrawPlayer(){
+        var newX=currentX
+                ,newY=currentY;
+
+        canvas.clearRect(currentX,currentY,5,5);
+        newX+=currentSpeed.x;
+        newY+=currentSpeed.y;
+        canvas.fillStyle="#0f4";
+        canvas.fillRect(newX,newY,5,5);
+        canvas.fillStyle="#000";
+
+        var movingObject={
+            oldX:currentX,
+            oldY:currentY,
+            newX:newX,
+            newY:newY
+        };
+
+        socket.emit('playerMoved',movingObject);
+
+        currentX=newX;
+        currentY=newY;
+    }
+
+    function reduceSpeed(speed){
+        if(speed!==0){
+            if(speed>0){
+                speed--;
+                if(speed<0){
+                    speed=0;
+                }
+            }else if(speed<0){
+                speed++;
+                if(speed>0){
+                    speed=0;
+                }
+            }
+        }
+
+        return speed;
+    }
+
+    socket.on('canvas', function (data) {
+        canvas.fillStyle="#b04";
+        canvas.fillRect(data.x, data.y, 5, 5);
+        canvas.fillStyle="#000";
+    });
+
+    socket.on('messages', function (data) {
+        $('#response').html(data.toString());
+    });
+
+    socket.on('log-in', function (data) {
+
+    });
+
+    socket.on('playerMoved', function (data) {
+        canvas.clearRect(data.oldX,data.oldY,5,5);
+        canvas.fillStyle="#000";
+        canvas.fillRect(data.newX,data.newY,5,5);
+    });
+</script>
+
+</body>
+</html>
