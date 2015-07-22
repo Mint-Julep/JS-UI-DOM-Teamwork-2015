@@ -52,7 +52,9 @@ var game = {
 
 		// Get handler for game canvas and context
 		this.canvas = $('#gamecanvas')[0];
-		this.context = this.canvas.getContext('2d');
+		if(this.canvas){
+			this.context = this.canvas.getContext('2d');
+		}
 	},
 	showLevelScreen: function() {
 		$('.gamelayer').hide();

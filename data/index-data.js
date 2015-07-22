@@ -32,24 +32,26 @@ var data = {
 
             User.findOne({name: userName, pass: userPass}, function (err, user) {
                 if (err) {
+                    err.text = 'Database error';
                     reject(err);
                     return;
                 }
 
                 if (user) {
-                    resolve('Logged in');
+                    resolve({username:user.name});
                     return;
                 } else {
                     User.findOne({name: userName}, function (err, user) {
                         if (err) {
+                            err.text = 'Database error';
                             reject(err);
                             return;
                         }
 
                         if (user) {
-                            resolve('Wrong password');
+                            reject({text:'Wrong password!'});
                         }else {
-                            resolve('No such username found')
+                            reject({text:'No such username found'});
                         }
                     })
                 }
@@ -60,14 +62,23 @@ var data = {
     },
     saveUser: function (userData) {
         var promise = new Promise(function (resolve, reject) {
+
+            if(userData.name.length<6){
+                reject({text:'Username must be at least 6 symbols!'});
+            }
+            if(userData.pass.length<6){
+                reject({text:'Password must be at least 6 symbols!'});
+            }
             var nextId;
             mongoose.connection.collection('general').findOne({name: 'options'}, function (err, optionsResponse) {
                 if (err) {
+                    err.text='Database error';
                     reject(err);
                     return;
                 }
                 User.findOne({name: userData.name}, function (err, user) {
                     if (err) {
+                        err.text='Database error';
                         reject(err);
                     }
 
@@ -82,12 +93,11 @@ var data = {
                         generalCollection.update({_id: optionsResponse._id}, options);
                         
                         userData.pass= sha1(userData.pass);
-                        console.log('will register');
-                        console.log(userData.pass);
 
                         var newUser = new User({id: nextId, name: userData.name, pass:userData.pass, rank: 0});
                         newUser.save(function (err, dbData) {
                             if (err) {
+                                err.text='Database error';
                                 reject(err);
                                 return;
                             }
