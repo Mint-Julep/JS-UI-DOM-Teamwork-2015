@@ -94,13 +94,6 @@ var game = {
                 src: "/assets/js/levels.js"
             }]);
 
-
-
-        //<script src="/assets/js/input.js"></script>
-        //<script src="/assets/js/sprite.js"></script>
-        //<script src="/assets/js/inputEngine.js"></script>
-        //<script src="/assets/js/utils.js"></script>
-        //<script src="/assets/js/levels.js"></script>
     },
     showLevelScreen: function () {
         $('.gamelayer').hide();
