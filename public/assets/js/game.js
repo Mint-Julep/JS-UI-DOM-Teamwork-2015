@@ -41,16 +41,14 @@ $(window).load(function () {
 ////////////////////////////////////////////////////////////
 //                Game Engine                             //
 ////////////////////////////////////////////////////////////
-var player = {
-    pos: [0, 0],
-    speed: 100,
-    sprite: playerSprite('/assets/img/icons/player.png', [10, 5], [28, 40], 16, [0, 1, 0])
-};
+var player;
 
 var game = {
 
     //  Start initializing objects, preloading assets and display start screen
     init: function () {
+        var queue;
+
         levels.init();
         loader.init();
 
@@ -63,6 +61,46 @@ var game = {
         if (this.canvas) {
             this.context = this.canvas.getContext('2d');
         }
+
+        queue = new createjs.LoadQueue();
+        queue.installPlugin(createjs.SoundJS);
+        queue.installPlugin(createjs.EaselJS);
+        queue.addEventListener('complete',function(){
+            player = {
+                pos: [0, 0],
+                speed: 100,
+                sprite: playerSprite('/assets/img/icons/player.png', [10, 5], [28, 40], 16, [0, 1, 0])
+            };
+        });
+        queue.loadManifest([
+            {
+                id: "input",
+                src: "/assets/js/input.js"
+            },
+            {
+                id: "sprite",
+                src: "/assets/js/sprite.js"
+            },
+            {
+                id: "inputEngine",
+                src: "/assets/js/inputEngine.js"
+            },
+            {
+                id: "utils",
+                src: "/assets/js/utils.js"
+            },
+            {
+                id: "levels",
+                src: "/assets/js/levels.js"
+            }]);
+
+
+
+        //<script src="/assets/js/input.js"></script>
+        //<script src="/assets/js/sprite.js"></script>
+        //<script src="/assets/js/inputEngine.js"></script>
+        //<script src="/assets/js/utils.js"></script>
+        //<script src="/assets/js/levels.js"></script>
     },
     showLevelScreen: function () {
         $('.gamelayer').hide();

@@ -12,9 +12,6 @@
     "start": "node app.js"
   },
   "contributors": {
-    "name": "Nikolay Dzhurov",
-    "name": "Atanas Atanasov",
-    "name": "Lyudmil Nikodimov",
     "name": "Ivaylo Arnaudov"
   },
   "repository": {
@@ -25,6 +22,7 @@
   "license": "ISC",
   "dependencies": {
     "bluebird": "^2.9.34",
+    "bower": "^1.4.1",
     "express": "^4.13.1",
     "mongoose": "^4.0.8",
     "morgan": "^1.6.1",
