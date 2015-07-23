@@ -29,7 +29,7 @@ $('#register').on('click', function () {
 
 socket.on('log-in', function (data) {
     document.cookie = "user=" + data.username + "; expires=Thu, 30 Aug 2015 12:00:00 UTC path=/";
-    window.location.href = window.location.href + 'game.html';
+    window.location.href = window.location.href + 'game/';
 });
 
 socket.on('form-error', function (data) {

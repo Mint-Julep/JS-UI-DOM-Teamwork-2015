@@ -1,11 +1,25 @@
 {
-  "name": "simple2",
+  "name": "BombGunner",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
+  "homepage": "https://github.com/Mint-Julep/JS-UI-DOM-Teamwork-2015/",
+  "bugs": {
+    "url": "https://github.com/Mint-Julep/JS-UI-DOM-Teamwork-2015/issues"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js"
+  },
+  "contributors": {
+    "name": "Nikolay Dzhurov",
+    "name": "Atanas Atanasov",
+    "name": "Lyudmil Nikodimov",
+    "name": "Ivaylo Arnaudov"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mint-Julep/JS-UI-DOM-Teamwork-2015"
   },
   "author": "",
   "license": "ISC",
