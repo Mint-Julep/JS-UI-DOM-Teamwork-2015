@@ -91,6 +91,14 @@ textarea, input { outline:none;}
     display: none;
 }
 
+.index-form .success{
+	background-color: #2ecc71;
+	text-align: center;
+	padding: 17px;
+	font-size: 20px;
+	display: none;
+}
+
 
 /*
     ==== INDEX ====

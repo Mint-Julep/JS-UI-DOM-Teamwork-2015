@@ -14,11 +14,18 @@ var db=data.connect('mongodb://server:server@dogen.mongohq.com:10005/BombGunner'
 var users=[];
 
 app.use(logger('dev'))
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '/public')));
+app.use('/bower_components',  express.static(__dirname + '/bower_components'));
 
 app.get('/game/:typeOfGame', function(req, res,next) {
-    console.log(req.typeOfGame);
-    res.sendFile(__dirname+'/public/game-singleplayer.html');
+    var typeOfGame=req.params.typeOfGame;
+    if(typeOfGame==='singleplayer'){
+        res.sendFile(__dirname+'/public/game-singleplayer.html');
+    }else if(typeOfGame==='multiplayer'){
+        res.sendFile(__dirname+'/public/game-multiplayer.html');
+    } else {
+        res.sendFile(__dirname+'/public/404.html');
+    }
 });
 app.get('/', function(req, res,next) {
     res.sendFile(__dirname+'/public/index.html');
@@ -36,6 +43,12 @@ server.listen(port,function(e){
 
 });
 
+app.use(function(req, res, next) {
+    var err = new Error('Not Found');
+    err.status = 404;
+    res.sendFile(__dirname+'/public/404.html');
+});
+
 io.on('connection', function(client) {
     client.on('log-in', function(clientData) {
         data.getUser(clientData).then(function(user){
@@ -50,7 +63,7 @@ io.on('connection', function(client) {
 
     client.on('register', function(clientData) {
         var user = data.saveUser(clientData).then(function(user){
-            client.emit('messages', user.toString());
+            client.emit('register',{text:'Registration successfull!'});
         },function (err) {
             client.emit('form-error', {form:'register','text':err.text});
         });
