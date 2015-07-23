@@ -12,7 +12,7 @@ $('#index-form h2').on('click', function () {
     $('#index-form h2').toggleClass('current');
 });
 
-var socket = io.connect('http://192.168.0.101:3000/');
+var socket = io.connect('localhost:3000/');
 $('#log-in').on('click', function () {
     socket.emit('log-in', {
         name: $('.log-in input[name="user"]').val(),
