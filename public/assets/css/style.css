@@ -91,6 +91,11 @@ textarea, input { outline:none;}
     display: none;
 }
 
+
+/*
+    ==== INDEX ====
+*/
+
 #gamecontainer {
 	width: 800px;
 	height: 600px;

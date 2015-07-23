@@ -30,7 +30,7 @@ server.listen(port,function(e){
         console.log(e);
         server.close();
     }else{
-        console.log('Server listening on port 80');
+        console.log('Server listening on port '+port);
     }
 
 });
