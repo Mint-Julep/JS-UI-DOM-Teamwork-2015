@@ -1,36 +1,32 @@
 <!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Bomberman</title>
-    <link rel="shortcut icon" type="image/png" href="assets/img/icons/favicon.png"/>
-    <link rel="stylesheet" href="assets/css/style.css">
-</head>
-<body>
-<div id="index-form">
-    <h2 class="current">Log In</h2>
+	<head>
+		<meta charset="UTF-8">
+		<title>Bomberman</title>
+		<link rel="shortcut icon" type="image/png" href="assets/img/icons/favicon.png"/>
+		<link rel="stylesheet" href="assets/css/style.css">
+	</head>
+	<body>
+		<div id="index-form">
+			<h2 class="current">Log In</h2>
 
-    <div class="index-form log-in">
-        <div class="error"></div>
-        <span class="form-input"><span class="label">Username:</span><input type="text" name="user" value="hacko"></span>
-        <span class="form-input"><span class="label">Password:</span><input type="password" name="pass" value="hackob"></span>
-        <input class="btn" type="button" id="log-in" value="Log in">
-    </div>
+			<div class="index-form log-in">
+				<div class="error"></div>
+				<span class="form-input"><span class="label">Username:</span><input type="text" name="user"></span>
+				<span class="form-input"><span class="label">Password:</span><input type="password" name="pass"></span>
+				<input class="btn" type="button" id="log-in" value="Log in">
+			</div>
+			<h2>Register</h2>
 
-    <h2>Register</h2>
-
-    <div class="index-form register">
-        <div class="error"></div>
-        <span class="form-input"><span class="label">Username:</span><input type="text" name="user" ></span>
-        <span class="form-input"><span class="label">Password:</span><input type="password" name="pass" ></span>
-        <input class="btn" type="button" id="register" value="Register">
-    </div>
-</div>
-<script src="assets/js/jquery-1.11.3.min.js"></script>
-<script src="/socket.io/socket.io.js"></script>
-<script src="assets/js/index.js"></script>
-<script>
-
-</script>
-</body>
+			<div class="index-form register">
+				<div class="error"></div>
+				<span class="form-input"><span class="label">Username:</span><input type="text" name="user"></span>
+				<span class="form-input"><span class="label">Password:</span><input type="password" name="pass"></span>
+				<input class="btn" type="button" id="register" value="Register">
+			</div>
+		</div>
+		<script src="assets/js/jquery-1.11.3.min.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="assets/js/index.js"></script>
+	</body>
 </html>  
