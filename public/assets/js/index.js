@@ -1,8 +1,8 @@
-$('#index-form h2').on('click', function () {
+$('#index-form h2:not(.singleplayer)').on('click', function () {
     if($(this).hasClass('current')){
         return;
     }
-    $('#index-form .index-form').animate({
+    $('#index-form .index-form:not(.singleplayer)').animate({
         height: 'toggle'
     }, {
         duration: 200,

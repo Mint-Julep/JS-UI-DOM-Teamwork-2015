@@ -30,6 +30,9 @@ var game = {
             this.context = this.canvas.getContext('2d');
         }
 
+        this.stages={};
+        var base=this;
+
         queue = new createjs.LoadQueue();
         queue.installPlugin(createjs.SoundJS);
         queue.installPlugin(createjs.EaselJS);
@@ -37,8 +40,12 @@ var game = {
             player = {
                 pos: [0, 0],
                 speed: 100,
-                sprite: playerSprite('/assets/img/icons/player.png', [10, 5], [28, 40], 16, [0, 1, 0])
+                sprite: playerSprite('/assets/img/icons/player.png', [10, 5], [28, 40], 20, [0, 1, 0])
             };
+
+            base.stages.playerStage = new createjs.Stage("gamecanvas");
+            base.stages.mapStage = new createjs.Stage("gamecanvas");
+
         });
         queue.loadManifest([
             {
@@ -60,6 +67,10 @@ var game = {
             {
                 id: "levels",
                 src: "/assets/js/levels.js"
+            },
+            {
+                id: "clipper",
+                src: "/assets/js/libs/clipper.js"
             }]);
 
     },
@@ -109,15 +120,16 @@ var game = {
         }
     },
     render: function () {
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        //this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         game.renderEntity(player);
     },
     renderEntity: function (entity) {
         this.context.save();
-        this.context.translate(entity.pos[0], entity.pos[1]);
-        entity.sprite.render(this.context);
+        //this.context.translate(entity.pos[0], entity.pos[1]);
+        entity.sprite.render(this.context,entity.pos[0], entity.pos[1]);
         this.context.restore();
-    }
+    },
+    stages:{}
 };
 
 ////////////////////////////////////////////////////////////
@@ -159,6 +171,8 @@ var levels = {
 
             //for debugging purpose
             $('#gamecanvas').show();
+
+
             game.main();
         });
     },

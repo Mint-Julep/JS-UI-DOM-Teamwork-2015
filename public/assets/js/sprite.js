@@ -79,7 +79,7 @@
         });
 
         Object.defineProperty(playerSprite, 'render', {
-            value: function (context) {
+            value: function (context,posX,posY) {
                 var frame;
 
                 if (!this._resourcesCache[this.url]) {
@@ -97,7 +97,24 @@
                     frame = this.frames[idx % maxFrames];
 
                     if (this._once && idx >= maxFrames) {
-                        context.drawImage(this._resourcesCache[this.url], x, y, this.size[0], this.size[1], 0, 0, this.size[0], this.size[1]);
+                        //context.drawImage(this._resourcesCache[this.url], x, y, this.size[0], this.size[1], 0, 0, this.size[0], this.size[1]);
+                        //TODO move playerImage to property
+                        var playerImage = new createjs.Bitmap(this._resourcesCache[this.url]);
+
+                        if(game.stages.playerStage.getChildAt(0)){
+                            playerImage =    game.stages.playerStage.getChildAt(0);
+                        }
+
+                        var clipping_rect = new createjs.Graphics;
+                        clipping_rect.drawRect(x, y, this.size[0], this.size[1]);
+                        playerImage.clip = clipping_rect;
+
+                        playerImage.x = posX-x;
+                        playerImage.y = posY-y;
+
+                        game.stages.playerStage.addChild(playerImage);
+                        game.stages.playerStage.update();
+
                         return;
                     }
 
@@ -111,7 +128,23 @@
                     x += frame * this.size[0];
                 }
 
-                context.drawImage(this._resourcesCache[this.url], x, y, this.size[0], this.size[1], 0, 0, this.size[0], this.size[1]);
+                //TODO move playerImage to property
+                var playerImage = new createjs.Bitmap(this._resourcesCache[this.url]);
+
+                if(game.stages.playerStage.getChildAt(0)){
+                    playerImage =    game.stages.playerStage.getChildAt(0);
+                }
+
+                var clipping_rect = new createjs.Graphics;
+                clipping_rect.drawRect(x, y, this.size[0], this.size[1]);
+                playerImage.clip = clipping_rect;
+
+                playerImage.x = posX-x;
+                playerImage.y = posY-y;
+
+                game.stages.playerStage.addChild(playerImage);
+                game.stages.playerStage.update();
+                //context.drawImage(this._resourcesCache[this.url], x, y, this.size[0], this.size[1], 0, 0, this.size[0], this.size[1]);
             }
         });
 

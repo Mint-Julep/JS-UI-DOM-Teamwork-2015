@@ -31,14 +31,18 @@ textarea, input { outline:none;}
      cursor: pointer;
 }
 
+#index-form h2 {
+    border-top: 5px solid #2c3e50;
+}
+
 #index-form h2:first-of-type{
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
+    border-top:none;
 }
 #index-form h2:last-of-type{
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
-    border-top: 5px solid #2c3e50;
 }
 
 #index-form .btn{
@@ -97,6 +101,11 @@ textarea, input { outline:none;}
 	padding: 17px;
 	font-size: 20px;
 	display: none;
+}
+
+h2 a{
+    color: #fff;
+    text-decoration: none;
 }
 
 
