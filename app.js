@@ -15,6 +15,10 @@ var users=[];
 
 app.use(logger('dev'))
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/game/', function(req, res,next) {
+    res.sendFile(__dirname+'/public/game.html');
+});
 app.get('/', function(req, res,next) {
     res.sendFile(__dirname+'/public/index.html');
 });
