@@ -27,6 +27,12 @@ var data = {
     },
     getUser: function (userData) {
         var promise = new Promise(function (resolve, reject) {
+            if(userData.name.length<6){
+                reject({text:'Invalid username'});
+            }else if(userData.pass.length<6){
+                reject({text:'Invalid password'});
+            }
+
             var userName = userData.name,
                 userPass = sha1(userData.pass);
 

@@ -1,8 +1,8 @@
-$('#index-form h2').on('click', function () {
+$('#index-form h2:not(.singleplayer)').on('click', function () {
     if($(this).hasClass('current')){
         return;
     }
-    $('#index-form .index-form').animate({
+    $('#index-form .index-form:not(.singleplayer)').animate({
         height: 'toggle'
     }, {
         duration: 200,
@@ -29,7 +29,18 @@ $('#register').on('click', function () {
 
 socket.on('log-in', function (data) {
     document.cookie = "user=" + data.username + "; expires=Thu, 30 Aug 2015 12:00:00 UTC path=/";
-    window.location.href = window.location.href + 'game.html';
+    window.location.href = window.location.href + 'game/multiplayer/';
+});
+
+socket.on('register', function (data) {
+    $('.index-form .success').html(data.text);
+    $('.index-form .success').slideDown();
+
+    $(document).bind('click', function() {
+        $(this).unbind('click');
+        $('.success').slideUp();
+        $('.success').html('');
+    });
 });
 
 socket.on('form-error', function (data) {
