@@ -277,9 +277,12 @@ GameEngine = Class.extend({
 
     },
     loadPlayer:function(){
-        gameEngine.player.sprite.setTransform(0,0,1.2,1.2);
+        var initialX=this.levelData.initialPosition.x;
+        var initialY=this.levelData.initialPosition.y;
+        gameEngine.player.position=this.levelData.initialPosition;
+
+        gameEngine.player.sprite.setTransform(initialX,initialY,1.2,1.2);
         gameEngine.containers.player.addChild(gameEngine.player.sprite);
-        //gameEngine.containers.player.setTransform(0,0,1.5,1.5);
         gameEngine.stage.update();
     },
     isMapEmptyAt:function(x,y){
