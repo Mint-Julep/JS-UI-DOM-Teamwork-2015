@@ -18,8 +18,6 @@ GameEngine = Class.extend({
 
         this.startEngine();
 
-
-
     },
     showLevelScreen: function () {
         $('.gamelayer').hide();
@@ -32,25 +30,13 @@ GameEngine = Class.extend({
         var deltaTime = (now - this.lastTime) / 1000.0;
 
         gameEngine.update(deltaTime);
-        gameEngine.render();
+        //gameEngine.render();
 
-        lastTime = now;
+        this.lastTime = now;
 
-        //requestAnimationFrame(game.main);
+        requestAnimationFrame(gameEngine.main);
     },
     update: function (deltaTime) {
-
-        //this.stage.update();
-
-        //gameEngine.containers.player.addChild(gameEngine.player.sprite);
-        //gameEngine.stage.update();
-        //
-        //setInterval(function(){
-        //    gameEngine.stage.update();
-        //    if(Math.random()*20|0>17){
-        //        gameEngine.player.sprite=  new createjs.Sprite(gameEngine.player.spriteSheet,'left');
-        //    }
-        //},100);
 
         //player.sprite.update(deltaTime);
         //this.player.update(deltaTime);
@@ -59,41 +45,67 @@ GameEngine = Class.extend({
 
     },
     handleInput: function (deltaTime) {
-        //console.log(this.player.y);
-        console.log(deltaTime);
+        var moved=false;
+        //console.log(deltaTime);
         if (input.isDown('DOWN') || input.isDown('s')) {
-            this.player.y += this.player.speed * deltaTime;
-            //this.player.sprite.move();
-            //this.player.sprite.direction(0);
+            this.player.position.y += this.player.speed * deltaTime;
+            moved=true;
+            if(!this.player.direction.down) {
+                this.player.direction.down = true;
+                this.player.sprite.gotoAndPlay('facein');
+            }
+        } else {
+            this.player.direction.down=false;
         }
 
         if (input.isDown('Up') || input.isDown('w')) {
-            this.player.y -= this.player.speed * deltaTime;
-            //this.player.sprite.move();
-            //this.player.sprite.direction(2);
+            this.player.position.y -= this.player.speed * deltaTime;
+            moved=true;
+            if(!this.player.direction.up) {
+                this.player.direction.up = true;
+                this.player.sprite.gotoAndPlay('faceaway');
+            }
+        } else {
+            this.player.direction.up=false;
         }
 
         if (input.isDown('LEFT') || input.isDown('a')) {
-            this.player.x -= this.player.speed * deltaTime;
-            //this.player.sprite.move();
-            //this.player.sprite.direction(1);
+            this.player.position.x -= this.player.speed * deltaTime;
+            moved=true;
+            if(!this.player.direction.left) {
+                this.player.direction.left = true;
+                this.player.sprite.gotoAndPlay('left');
+            }
+        }  else {
+            this.player.direction.left=false;
         }
 
         if (input.isDown('Right') || input.isDown('d')) {
-            this.player.x += this.player.speed * deltaTime;
-            //this.player.sprite.move();
-            //this.player.sprite.direction(3);
+            this.player.position.x += this.player.speed * deltaTime;
+            moved=true;
+            if(!this.player.direction.right) {
+                this.player.direction.right = true;
+                this.player.sprite.gotoAndPlay('right');
+            }
+        } else {
+           this.player.direction.right=false;
         }
+
+        if(moved){
+            gameEngine.render();
+        } else {
+            //this.player.clearDirections();
+            this.player.sprite.gotoAndPlay('idle');
+            this.stage.update();
+        }
+
+
     },
     render: function () {
-        //this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        //game.renderEntity(player);
-    },
-    renderEntity: function (entity) {
-        //this.context.save();
-        //this.context.translate(entity.x, entity.y);
-        //entity.sprite.render(this.context, entity.x, entity.y);
-        //this.context.restore();
+        console.log('will render');
+        this.player.sprite.x = this.player.position.x;
+        this.player.sprite.y = this.player.position.y;
+        this.stage.update();
     },
     startEngine: function () {
         this.loadLibraries();
@@ -113,11 +125,11 @@ GameEngine = Class.extend({
         intializingQueue.addEventListener('complete', this.loadFiles);
     },
     loadFiles: function () {
-        var queue = new createjs.LoadQueue();
-        queue.installPlugin(createjs.Sound);
+        gameEngine.queue = new createjs.LoadQueue();
+        gameEngine.queue.installPlugin(createjs.Sound);
 
 
-        queue.loadManifest([
+        gameEngine.queue.loadManifest([
             {id: "Entity", src: "/assets/js/Entity.js"},
             {id: "Player", src: "/assets/js/Player.js"},
             {id: "input", src: "/assets/js/input.js"},
@@ -127,18 +139,21 @@ GameEngine = Class.extend({
             {id: "levels", src: "/assets/js/levels.js"},
             {id: "clipper", src: "/assets/js/libs/clipper.js"},
             {id: "intro-sound", src: "/assets/sound/get-ready.mp3"},
-            {id: "bomb-sound", src: "/assets/sound/bomb.mp3"}
+            {id: "bomb-sound", src: "/assets/sound/bomb.mp3"},
+            {id: "tile-grass", src: "/assets/img/grass.png"},
+            {id: "tile-wall", src: "/assets/img/wall.png"},
+            {id: "tile-wood", src: "/assets/img/wood.png"},
         ]);
 
 
-        queue.addEventListener('complete',gameEngine.setupGame);
+        gameEngine.queue.addEventListener('complete',gameEngine.setupGame);
     },
     setupGame: function () {
+        console.log('files loaded');
 
         //createjs.Sound.play('bomb-sound');
 
         gameEngine.player = new Player(gameEngine.id++, {x: 0, y: 0}, '/assets/img/sprite-fixed.png');
-        //gameEngine.player.init();
 
         gameEngine.containers = {};
 
@@ -147,12 +162,15 @@ GameEngine = Class.extend({
 
         gameEngine.containers.background = new createjs.Container();
         gameEngine.containers.background.name = "background";
+        gameEngine.containers.backgroundDestructable = new createjs.Container();
+        gameEngine.containers.backgroundDestructable.name = "backgroundDestructable";
         gameEngine.containers.player = new createjs.Container();
         gameEngine.containers.player.name = "player";
         gameEngine.containers.playerBombs = new createjs.Container();
         gameEngine.containers.playerBombs.name = "playerBombs";
 
         gameEngine.stage.addChild(gameEngine.containers.background);
+        gameEngine.stage.addChild(gameEngine.containers.backgroundDestructable);
         gameEngine.stage.addChild(gameEngine.containers.player);
         gameEngine.stage.addChild(gameEngine.containers.playerBombs);
         gameEngine.stage.update();
@@ -173,6 +191,7 @@ GameEngine = Class.extend({
         // Set the button click event handlers to load level
         $('#levelselectscreen').find('input').click(function () {
             gameEngine.loadLevel(this.value-1);
+            gameEngine.loadPlayer();
             $('#levelselectscreen').hide();
 
             $('#gamecanvas').show();
@@ -181,36 +200,39 @@ GameEngine = Class.extend({
         });
     },
     loadLevel:function(levelNumber){
-        var tileGrass=new createjs.Bitmap('/assets/img/grass.png');
-        var tileWall=new createjs.Bitmap('/assets/img/wall.png');
-        tileWall.x=100;
-        tileWall.y=100;
-        gameEngine.containers.background.addChild(tileWall);
+        var tileWall = new createjs.Bitmap(gameEngine.queue.getResult('tile-wall'));
+        var tileGrass = new createjs.Bitmap(gameEngine.queue.getResult('tile-grass'));
+        var tileWood = new createjs.Bitmap(gameEngine.queue.getResult('tile-wood'));
 
-        gameEngine.stage.update();
-        console.log('added tile wall');
-        return;
         var levelData = levels.data[levelNumber],
             color;
-        console.log(levelData);
+
         levelData.map.forEach(function(row,y){
            row.forEach(function(tile,x){
-               var currentTile=new createjs.Shape();
 
                if(tile===1){
-                   tileWall.x=x;
-                   tileWall.y.y;
-                   gameEngine.containers.background.addChild(tileWall);
+                   tileWall.x=x*50;
+                   tileWall.y=y*50;
+                   gameEngine.containers.backgroundDestructable.addChild(tileWall.clone());
                } else if(tile===0){
-                   tileGrass.x=x;
-                   tileGrass.y.y;
-                   gameEngine.containers.background.addChild(tileGrass);
+                   tileGrass.x=x*50;
+                   tileGrass.y=y*50;
+                   gameEngine.containers.backgroundDestructable.addChild(tileGrass.clone());
+               } else if(tile===2){
+                   tileWood.x=x*50;
+                   tileWood.y=y*50;
+                   gameEngine.containers.backgroundDestructable.addChild(tileWood.clone());
                }
-
-
            });
         });
 
+
+        gameEngine.stage.update();
+
+    },
+    loadPlayer:function(){
+        gameEngine.containers.player.addChild(gameEngine.player.sprite);
+        gameEngine.stage.update();
     }
 
 });

@@ -36,6 +36,13 @@ Player = Entity.extend({
 
     sprite:undefined,
 
+    direction:{
+        up:false,
+        down:false,
+        left:false,
+        right:false
+    },
+
     /**
      * Bitmap dimensions
      */
@@ -68,7 +75,7 @@ Player = Entity.extend({
             faceaway:[8,11,'faceaway'],
             right:[12,15,'right']
         };
-        this.framerate =20;
+        this.framerate =3;
 
         var data = {
             images:[image],
@@ -76,14 +83,16 @@ Player = Entity.extend({
             animations:this.animations
         };
 
-        //console.log('here');
-
         this.spriteSheet = new createjs.SpriteSheet(data);
 
-        this.sprite=  new createjs.Sprite(this.spriteSheet,'facein');
+        this.sprite=  new createjs.Sprite(this.spriteSheet,'idle');
 
-
-
+    },
+    clearDirections:function(){
+        this.direction.down=false;
+        this.direction.up=false;
+        this.direction.left=false;
+        this.direction.right=false;
     }
 });
 
