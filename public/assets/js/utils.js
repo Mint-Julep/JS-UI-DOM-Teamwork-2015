@@ -43,6 +43,9 @@
 //};
 
 Utils = Class.extend({
+    init:function(){
+      this.polyfills();
+    },
 	comparePositions: function(pos1, pos2) {
 		return pos1.x == pos2.x && pos1.y == pos2.y;
 	},
@@ -84,6 +87,17 @@ Utils = Class.extend({
 				clearTimeout(id);
 			};
 		}
+
+        Array.prototype.remove = function() {
+            var what, a = arguments, L = a.length, ax;
+            while (L && this.length) {
+                what = a[--L];
+                while ((ax = this.indexOf(what)) !== -1) {
+                    this.splice(ax, 1);
+                }
+            }
+            return this;
+        };
 	}
 });
 
