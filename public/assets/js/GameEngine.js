@@ -100,6 +100,13 @@ GameEngine = Class.extend({
             this.keysQueue.remove("right");
         }
 
+        if (input.isDown('Space') || input.isDown('x')) {
+            var bomb= new Bomb(1,{x:0,y:0});
+            bomb.sprite.setTransform(this.player.position.x,this.player.position.y)
+            gameEngine.containers.playerBombs.addChild(bomb.sprite);
+            bomb.activate( gameEngine.containers.playerBombs);
+        }
+
         if(moved){
             if(this.keysQueue[0]==="up"){
                 if(this.player.canMove("up")) {
@@ -175,6 +182,7 @@ GameEngine = Class.extend({
         gameEngine.filesQueue.loadManifest([
             {id: "Entity", src: "/assets/js/Entity.js"},
             {id: "Player", src: "/assets/js/Player.js"},
+            {id: "Bomb", src: "/assets/js/Bomb.js"},
             {id: "input", src: "/assets/js/input.js"},
             {id: "sprite", src: "/assets/js/sprite.js"},
             {id: "inputEngine", src: "/assets/js/inputEngine.js"},
