@@ -110,13 +110,13 @@ Player = Entity.extend({
             } else {
                 return false;
             }
-        } else if(direction==="left"&& gameEngine.isMapEmptyAt(x-1,y+4) && gameEngine.isMapEmptyAt(x-1,y+31)){
+        } else if(direction==="left"&& gameEngine.isMapEmptyAt(x-1,y+4) && gameEngine.isMapEmptyAt(x-1,y+39)){
             if(x>2){
                 return true;
             } else {
                 return false;
             }
-        } else if(direction==="right"&& gameEngine.isMapEmptyAt(x+29,y+4) && gameEngine.isMapEmptyAt(x+29,y+31)){
+        } else if(direction==="right"&& gameEngine.isMapEmptyAt(x+29,y+4) && gameEngine.isMapEmptyAt(x+29,y+39)){
             if(x<774){
                 return true;
             } else {

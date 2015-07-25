@@ -247,28 +247,27 @@ GameEngine = Class.extend({
         });
     },
     loadLevel:function(levelNumber){
-        var tileWall = new createjs.Bitmap(gameEngine.filesQueue.getResult('tile-wall'));
-        var tileGrass = new createjs.Bitmap(gameEngine.filesQueue.getResult('tile-grass'));
-        var tileWood = new createjs.Bitmap(gameEngine.filesQueue.getResult('tile-wood'));
-
         this.levelData = levels.data[levelNumber];
         var color;
 
+        var backgroundTile =new createjs.Bitmap(gameEngine.filesQueue.getResult(this.levelData.tiles.background));
+        var wallTile =   new createjs.Bitmap(gameEngine.filesQueue.getResult(this.levelData.tiles.wall));
+        var breakableTile =  new createjs.Bitmap(gameEngine.filesQueue.getResult(this.levelData.tiles.breakable));
+
         this.levelData.map.forEach(function(row,y){
            row.forEach(function(tile,x){
-
-               if(tile===1){
-                   tileWall.x=x*50;
-                   tileWall.y=y*50;
-                   gameEngine.containers.backgroundDestructable.addChild(tileWall.clone());
-               } else if(tile===0){
-                   tileGrass.x=x*50;
-                   tileGrass.y=y*50;
-                   gameEngine.containers.backgroundDestructable.addChild(tileGrass.clone());
-               } else if(tile===2){
-                   tileWood.x=x*50;
-                   tileWood.y=y*50;
-                   gameEngine.containers.backgroundDestructable.addChild(tileWood.clone());
+               if(tile===0){ // Background tiles
+                   backgroundTile.x=x*50;
+                   backgroundTile.y=y*50;
+                   gameEngine.containers.backgroundDestructable.addChild(backgroundTile.clone());
+               }else if(tile===1){ // Object tiles
+                   wallTile.x=x*50;
+                   wallTile.y=y*50;
+                   gameEngine.containers.backgroundDestructable.addChild(wallTile.clone());
+               }else if(tile===2){
+                   breakableTile.x=x*50;
+                   breakableTile.y=y*50;
+                   gameEngine.containers.backgroundDestructable.addChild(breakableTile.clone());
                }
            });
         });
