@@ -101,13 +101,22 @@ GameEngine = Class.extend({
         }
 
         if (input.isDown('Space') || input.isDown('x')) {
-            var bomb= new Bomb(1,{x:0,y:0});
-            bomb.sprite.setTransform(this.player.position.x,this.player.position.y)
-            gameEngine.containers.playerBombs.addChild(bomb.sprite);
-            bomb.activate( gameEngine.containers.playerBombs);
+
+            if(this.keysQueue.indexOf("space")===-1){
+                console.log('space pressed');
+                this.keysQueue.push('space');
+                var bomb= new Bomb(1,{x:0,y:0});
+                bomb.sprite.setTransform(this.player.position.x,this.player.position.y)
+                gameEngine.containers.playerBombs.addChild(bomb.sprite);
+                bomb.activate( gameEngine.containers.playerBombs);
+            }
+
+        } else{
+            this.keysQueue.remove("space");
         }
 
         if(moved){
+
             if(this.keysQueue[0]==="up"){
                 if(this.player.canMove("up")) {
                     this.player.position.y -= this.player.speed * deltaTime;
@@ -140,6 +149,7 @@ GameEngine = Class.extend({
                     this.player.sprite.gotoAndPlay('right');
                 }
             }
+
             gameEngine.render();
         } else {
             this.player.clearDirections();
@@ -229,8 +239,8 @@ GameEngine = Class.extend({
 
         gameEngine.stage.addChild(gameEngine.containers.background);
         gameEngine.stage.addChild(gameEngine.containers.backgroundDestructable);
-        gameEngine.stage.addChild(gameEngine.containers.player);
         gameEngine.stage.addChild(gameEngine.containers.playerBombs);
+        gameEngine.stage.addChild(gameEngine.containers.player);
         gameEngine.stage.update();
 
         $('.gamelayer').hide();
