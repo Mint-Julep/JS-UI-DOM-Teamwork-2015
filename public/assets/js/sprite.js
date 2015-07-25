@@ -99,21 +99,44 @@
                     if (this._once && idx >= maxFrames) {
                         //context.drawImage(this._resourcesCache[this.url], x, y, this.size[0], this.size[1], 0, 0, this.size[0], this.size[1]);
                         //TODO move playerImage to property
-                        var playerImage = new createjs.Bitmap(this._resourcesCache[this.url]);
 
-                        if(game.stages.playerStage.getChildAt(0)){
-                            playerImage =    game.stages.playerStage.getChildAt(0);
+                        var playerContainer;
+                        playerContainer =  game.stages.gameStage.getChildByName("player");
+
+                        if(!playerContainer){
+                            playerContainer =  new createjs.Container();
+                            playerContainer.name= "player";
+
+                            var playerImage = new createjs.Bitmap(this._resourcesCache[this.url]);
+
+                            //var clipping_rect = new createjs.Graphics;
+                            //clipping_rect.drawRect(x, y, this.size[0], this.size[1]);
+                            //playerImage.clip = clipping_rect;
+
+                            playerImage.x = posX-x;
+                            playerImage.y = posY-y;
+
+                            playerContainer.addChild(playerImage);
+
+                            game.stages.gameStage.addChild(playerContainer);
+                            game.stages.gameStage.update();
+                        }else{
+                            playerContainer =  game.stages.gameStage.getChildByName('player');
+
+                            playerImage = playerContainer.getChildAt(0);
+
+                            var clipping_rect = new createjs.Graphics;
+                            clipping_rect.drawRect(x, y, this.size[0], this.size[1]);
+                            playerImage.clip = clipping_rect;
+
+                            playerImage.x = posX-x;
+                            playerImage.y = posY-y;
+
+                            //playerContainer.addChild(playerImage);
+
+                            //game.stages.gameStage.addChild(playerContainer);
+                            game.stages.gameStage.update();
                         }
-
-                        var clipping_rect = new createjs.Graphics;
-                        clipping_rect.drawRect(x, y, this.size[0], this.size[1]);
-                        playerImage.clip = clipping_rect;
-
-                        playerImage.x = posX-x;
-                        playerImage.y = posY-y;
-
-                        game.stages.playerStage.addChild(playerImage);
-                        game.stages.playerStage.update();
 
                         return;
                     }
@@ -129,22 +152,44 @@
                 }
 
                 //TODO move playerImage to property
-                var playerImage = new createjs.Bitmap(this._resourcesCache[this.url]);
 
-                if(game.stages.playerStage.getChildAt(0)){
-                    playerImage =    game.stages.playerStage.getChildAt(0);
+                var playerContainer;
+                playerContainer =  game.stages.gameStage.getChildByName("player");
+
+                if(!playerContainer){
+                    playerContainer =  new createjs.Container();
+                    playerContainer.name= "player";
+
+                    var playerImage = new createjs.Bitmap(this._resourcesCache[this.url]);
+
+                    //var clipping_rect = new createjs.Graphics;
+                    //clipping_rect.drawRect(x, y, this.size[0], this.size[1]);
+                    //playerImage.clip = clipping_rect;
+
+                    playerImage.x = posX-x;
+                    playerImage.y = posY-y;
+
+                    playerContainer.addChild(playerImage);
+
+                    game.stages.gameStage.addChild(playerContainer);
+                    game.stages.gameStage.update();
+                }else{
+                    playerContainer =  game.stages.gameStage.getChildByName('player');
+
+                    playerImage = playerContainer.getChildAt(0);
+
+                    var clipping_rect = new createjs.Graphics;
+                    clipping_rect.drawRect(x, y, this.size[0], this.size[1]);
+                    playerImage.clip = clipping_rect;
+
+                    playerImage.x = posX-x;
+                    playerImage.y = posY-y;
+
+                    //playerContainer.addChild(playerImage);
+
+                    //game.stages.gameStage.addChild(playerContainer);
+                    game.stages.gameStage.update();
                 }
-
-                var clipping_rect = new createjs.Graphics;
-                clipping_rect.drawRect(x, y, this.size[0], this.size[1]);
-                playerImage.clip = clipping_rect;
-
-                playerImage.x = posX-x;
-                playerImage.y = posY-y;
-
-                game.stages.playerStage.addChild(playerImage);
-                game.stages.playerStage.update();
-                //context.drawImage(this._resourcesCache[this.url], x, y, this.size[0], this.size[1], 0, 0, this.size[0], this.size[1]);
             }
         });
 
