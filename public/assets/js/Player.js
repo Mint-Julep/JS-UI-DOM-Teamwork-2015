@@ -69,13 +69,13 @@ Player = Entity.extend({
         this.playerImage =  image;
         this.frames = {width:25, height:35, count:16, regX: 0, regY:0, spacing:5, margin:0};
         this.animations ={
-            idle:0,
+            //idle:0,
             facein:[0,3,'facein'],
             left:[4,7,'left'],
             faceaway:[8,11,'faceaway'],
             right:[12,15,'right']
         };
-        this.framerate =3;
+        this.framerate =300;
 
         var data = {
             images:[image],
@@ -85,7 +85,10 @@ Player = Entity.extend({
 
         this.spriteSheet = new createjs.SpriteSheet(data);
 
-        this.sprite=  new createjs.Sprite(this.spriteSheet,'idle');
+        this.sprite=  new createjs.Sprite(this.spriteSheet,'facein');
+
+        this.sprite.framerate=200;
+        //console.log(this.sprite.currentAnimation);
 
     },
     clearDirections:function(){

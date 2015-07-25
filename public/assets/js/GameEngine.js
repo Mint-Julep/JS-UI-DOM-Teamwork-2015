@@ -10,6 +10,8 @@ GameEngine = Class.extend({
 
     containers: {},
 
+    keysQueue:[],
+
     lastTime:Date.now(),
 
     init: function () {
@@ -38,71 +40,98 @@ GameEngine = Class.extend({
     },
     update: function (deltaTime) {
 
-        //player.sprite.update(deltaTime);
-        //this.player.update(deltaTime);
-
         gameEngine.handleInput(deltaTime);
 
     },
     handleInput: function (deltaTime) {
         var moved=false;
-        //console.log(deltaTime);
+
         if (input.isDown('DOWN') || input.isDown('s')) {
-            this.player.position.y += this.player.speed * deltaTime;
             moved=true;
-            if(!this.player.direction.down) {
-                this.player.direction.down = true;
-                this.player.sprite.gotoAndPlay('facein');
+
+            if(this.keysQueue[0]!=="down"){
+                if(!(this.keysQueue.indexOf("down")>=0)){
+                    this.keysQueue.unshift("down");
+                }
             }
-        } else {
-            this.player.direction.down=false;
+
+        }else {
+            this.keysQueue.remove("down");
         }
 
         if (input.isDown('Up') || input.isDown('w')) {
-            this.player.position.y -= this.player.speed * deltaTime;
             moved=true;
-            if(!this.player.direction.up) {
-                this.player.direction.up = true;
-                this.player.sprite.gotoAndPlay('faceaway');
+
+            if(this.keysQueue[0]!=="up"){
+                if(!(this.keysQueue.indexOf("up")>=0)){
+                    this.keysQueue.unshift("up");
+                }
             }
-        } else {
-            this.player.direction.up=false;
+        }else {
+            this.keysQueue.remove("up");
         }
 
         if (input.isDown('LEFT') || input.isDown('a')) {
-            this.player.position.x -= this.player.speed * deltaTime;
             moved=true;
-            if(!this.player.direction.left) {
-                this.player.direction.left = true;
-                this.player.sprite.gotoAndPlay('left');
+
+            if(this.keysQueue[0]!=="left"){
+                if(!(this.keysQueue.indexOf("left")>=0)){
+                    this.keysQueue.unshift("left");
+                }
             }
-        }  else {
-            this.player.direction.left=false;
+
+        } else {
+            this.keysQueue.remove("left");
         }
 
         if (input.isDown('Right') || input.isDown('d')) {
-            this.player.position.x += this.player.speed * deltaTime;
+
             moved=true;
-            if(!this.player.direction.right) {
-                this.player.direction.right = true;
-                this.player.sprite.gotoAndPlay('right');
+
+            if(this.keysQueue[0]!=="right"){
+                if(!(this.keysQueue.indexOf("right")>=0)){
+                    this.keysQueue.unshift("right");
+                }
             }
-        } else {
-           this.player.direction.right=false;
+
+        } else{
+            this.keysQueue.remove("right");
         }
 
         if(moved){
+            if(this.keysQueue[0]==="up"){
+                this.player.position.y -= this.player.speed * deltaTime;
+                if(this.player.sprite.currentAnimation!=='faceaway') {
+                    this.player.sprite.gotoAndPlay('faceaway');
+                }
+            }
+            if(this.keysQueue[0]==="down"){
+                this.player.position.y += this.player.speed * deltaTime;
+                if(this.player.sprite.currentAnimation!=='facein' || this.player.sprite.paused) {
+                    this.player.sprite.gotoAndPlay('facein');
+                }
+            }
+            if(this.keysQueue[0]==="left"){
+                this.player.position.x -= this.player.speed * deltaTime;
+                if(this.player.sprite.currentAnimation!=='left') {
+                    this.player.sprite.gotoAndPlay('left');
+                }
+            }
+            if(this.keysQueue[0]==="right"){
+                this.player.position.x += this.player.speed * deltaTime;
+                if(this.player.sprite.currentAnimation!=='right') {
+                    this.player.sprite.gotoAndPlay('right');
+                }
+            }
             gameEngine.render();
         } else {
-            //this.player.clearDirections();
-            this.player.sprite.gotoAndPlay('idle');
+            this.player.clearDirections();
+            this.player.sprite.gotoAndStop('facein');
             this.stage.update();
         }
-
-
     },
     render: function () {
-        console.log('will render');
+        //console.log('will render');
         this.player.sprite.x = this.player.position.x;
         this.player.sprite.y = this.player.position.y;
         this.stage.update();
