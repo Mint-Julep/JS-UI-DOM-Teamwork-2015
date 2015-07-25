@@ -250,45 +250,27 @@ GameEngine = Class.extend({
         });
     },
     loadLevel:function(levelNumber){
-        // Background tiles
-        var tileGrass = new createjs.Bitmap(gameEngine.filesQueue.getResult('tile-grass'));
-        var tileSnow = new createjs.Bitmap(gameEngine.filesQueue.getResult('tile-snow'));
-
-        // Object tiles
-        var tileWall = new createjs.Bitmap(gameEngine.filesQueue.getResult('tile-wall'));
-        var tileWood = new createjs.Bitmap(gameEngine.filesQueue.getResult('tile-wood'));
-        var tileIce = new createjs.Bitmap(gameEngine.filesQueue.getResult('tile-ice'));
-        var tileCrate = new createjs.Bitmap(gameEngine.filesQueue.getResult('tile-crate'));
-
         this.levelData = levels.data[levelNumber];
         var color;
+
+        var backgroundTile =new createjs.Bitmap(gameEngine.filesQueue.getResult(this.levelData.tiles.background));
+        var wallTile =   new createjs.Bitmap(gameEngine.filesQueue.getResult(this.levelData.tiles.wall));
+        var breakableTile =  new createjs.Bitmap(gameEngine.filesQueue.getResult(this.levelData.tiles.breakable));
 
         this.levelData.map.forEach(function(row,y){
            row.forEach(function(tile,x){
                if(tile===0){ // Background tiles
-                   tileGrass.x=x*50;
-                   tileGrass.y=y*50;
-                   gameEngine.containers.backgroundDestructable.addChild(tileGrass.clone());
-               } else if (tile===3) {
-                   tileSnow.x=x*50;
-                   tileSnow.y=y*50;
-                   gameEngine.containers.backgroundDestructable.addChild(tileSnow.clone());
-               } else if(tile===1){ // Object tiles
-                   tileWall.x=x*50;
-                   tileWall.y=y*50;
-                   gameEngine.containers.backgroundDestructable.addChild(tileWall.clone());
+                   backgroundTile.x=x*50;
+                   backgroundTile.y=y*50;
+                   gameEngine.containers.backgroundDestructable.addChild(backgroundTile.clone());
+               }else if(tile===1){ // Object tiles
+                   wallTile.x=x*50;
+                   wallTile.y=y*50;
+                   gameEngine.containers.backgroundDestructable.addChild(wallTile.clone());
                }else if(tile===2){
-                   tileWood.x=x*50;
-                   tileWood.y=y*50;
-                   gameEngine.containers.backgroundDestructable.addChild(tileWood.clone());
-               } else if (tile===4) {
-                   tileIce.x=x*50;
-                   tileIce.y=y*50;
-                   gameEngine.containers.backgroundDestructable.addChild(tileIce.clone());
-               } else if (tile===5) {
-                   tileCrate.x=x*50;
-                   tileCrate.y=y*50;
-                   gameEngine.containers.backgroundDestructable.addChild(tileCrate.clone());
+                   breakableTile.x=x*50;
+                   breakableTile.y=y*50;
+                   gameEngine.containers.backgroundDestructable.addChild(breakableTile.clone());
                }
            });
         });
