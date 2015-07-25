@@ -70,12 +70,11 @@ Player = Entity.extend({
         this.frames = {width:25, height:35, count:16, regX: 0, regY:0, spacing:5, margin:0};
         this.animations ={
             //idle:0,
-            facein:[0,3,'facein'],
-            left:[4,7,'left'],
-            faceaway:[8,11,'faceaway'],
-            right:[12,15,'right']
+            facein:[0,3,'facein',0.2],
+            left:[4,7,'left',0.2],
+            faceaway:[8,11,'faceaway',0.2],
+            right:[12,15,'right',0.2]
         };
-        this.framerate =300;
 
         var data = {
             images:[image],
@@ -87,9 +86,44 @@ Player = Entity.extend({
 
         this.sprite=  new createjs.Sprite(this.spriteSheet,'facein');
 
-        this.sprite.framerate=200;
+        this.speed=100;
         //console.log(this.sprite.currentAnimation);
 
+    },
+    canMove:function(direction){
+        var x=this.position.x,
+            y=this.position.y;
+
+        x=(x+1)|0;
+        y=(y+1)|0;
+        console.log(x+'  '+y);
+
+        if(direction==="down"){
+            if(y<564 && gameEngine.isMapEmptyAt(x+4,y+42) && gameEngine.isMapEmptyAt(x+22,y+42)){
+                return true;
+            } else {
+                return false;
+            }
+        } else if(direction==="up"&& gameEngine.isMapEmptyAt(x+4,y-3) && gameEngine.isMapEmptyAt(x+22,y-3)){
+            if(y>2){
+                return true;
+            } else {
+                return false;
+            }
+        } else if(direction==="left"&& gameEngine.isMapEmptyAt(x-1,y+4) && gameEngine.isMapEmptyAt(x-1,y+31)){
+            if(x>2){
+                return true;
+            } else {
+                return false;
+            }
+        } else if(direction==="right"&& gameEngine.isMapEmptyAt(x+29,y+4) && gameEngine.isMapEmptyAt(x+29,y+31)){
+            if(x<774){
+                return true;
+            } else {
+                return false;
+            }
+
+        }
     },
     clearDirections:function(){
         this.direction.down=false;

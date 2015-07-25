@@ -14,6 +14,8 @@ GameEngine = Class.extend({
 
     lastTime:Date.now(),
 
+    levelData:undefined,
+
     init: function () {
         var filesQueue,
             librariesQueue;
@@ -100,25 +102,33 @@ GameEngine = Class.extend({
 
         if(moved){
             if(this.keysQueue[0]==="up"){
-                this.player.position.y -= this.player.speed * deltaTime;
+                if(this.player.canMove("up")) {
+                    this.player.position.y -= this.player.speed * deltaTime;
+                }
                 if(this.player.sprite.currentAnimation!=='faceaway') {
                     this.player.sprite.gotoAndPlay('faceaway');
                 }
             }
             if(this.keysQueue[0]==="down"){
-                this.player.position.y += this.player.speed * deltaTime;
+                if(this.player.canMove("down")) {
+                    this.player.position.y += this.player.speed * deltaTime;
+                }
                 if(this.player.sprite.currentAnimation!=='facein' || this.player.sprite.paused) {
                     this.player.sprite.gotoAndPlay('facein');
                 }
             }
             if(this.keysQueue[0]==="left"){
-                this.player.position.x -= this.player.speed * deltaTime;
+                if(this.player.canMove("left")) {
+                    this.player.position.x -= this.player.speed * deltaTime;
+                }
                 if(this.player.sprite.currentAnimation!=='left') {
                     this.player.sprite.gotoAndPlay('left');
                 }
             }
             if(this.keysQueue[0]==="right"){
-                this.player.position.x += this.player.speed * deltaTime;
+                if(this.player.canMove("right")) {
+                    this.player.position.x += this.player.speed * deltaTime;
+                }
                 if(this.player.sprite.currentAnimation!=='right') {
                     this.player.sprite.gotoAndPlay('right');
                 }
@@ -250,10 +260,10 @@ GameEngine = Class.extend({
         var tileIce = new createjs.Bitmap(gameEngine.filesQueue.getResult('tile-ice'));
         var tileCrate = new createjs.Bitmap(gameEngine.filesQueue.getResult('tile-crate'));
 
-        var levelData = levels.data[levelNumber],
-                        color;
+        this.levelData = levels.data[levelNumber];
+        var color;
 
-        levelData.map.forEach(function(row,y){
+        this.levelData.map.forEach(function(row,y){
            row.forEach(function(tile,x){
                if(tile===0){ // Background tiles
                    tileGrass.x=x*50;
@@ -288,8 +298,13 @@ GameEngine = Class.extend({
 
     },
     loadPlayer:function(){
+        gameEngine.player.sprite.setTransform(0,0,1.2,1.2);
         gameEngine.containers.player.addChild(gameEngine.player.sprite);
+        //gameEngine.containers.player.setTransform(0,0,1.5,1.5);
         gameEngine.stage.update();
+    },
+    isMapEmptyAt:function(x,y){
+        return this.levelData.map[(y/50|0)][(x/50|0)]===0;
     }
 
 });
