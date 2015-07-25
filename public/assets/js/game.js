@@ -1,5 +1,3 @@
-
-
 var lastTime = Date.now();
 
 $(window).load(function () {
@@ -15,7 +13,8 @@ var game = {
 
     //  Start initializing objects, preloading assets and display start screen
     init: function () {
-        var queue;
+        var queue,
+            initializingQueue;
 
         levels.init();
         loader.init();
@@ -33,45 +32,63 @@ var game = {
         this.stages={};
         var base=this;
 
-        queue = new createjs.LoadQueue();
-        queue.installPlugin(createjs.SoundJS);
-        queue.installPlugin(createjs.EaselJS);
-        queue.addEventListener('complete',function(){
-            player = {
-                pos: [0, 0],
-                speed: 100,
-                sprite: playerSprite('/assets/img/icons/player.png', [10, 5], [28, 40], 20, [0, 1, 0])
-            };
-
-            base.stages.playerStage = new createjs.Stage("gamecanvas");
-            base.stages.mapStage = new createjs.Stage("gamecanvas");
-
-        });
-        queue.loadManifest([
+        intializingQueue = new createjs.LoadQueue();
+        intializingQueue.loadManifest([
             {
-                id: "input",
-                src: "/assets/js/input.js"
+                id: "SoundJS",
+                src: "/bower_components/SoundJS/lib/soundjs-0.6.1.min.js"
             },
             {
-                id: "sprite",
-                src: "/assets/js/sprite.js"
-            },
-            {
-                id: "inputEngine",
-                src: "/assets/js/inputEngine.js"
-            },
-            {
-                id: "utils",
-                src: "/assets/js/utils.js"
-            },
-            {
-                id: "levels",
-                src: "/assets/js/levels.js"
-            },
-            {
-                id: "clipper",
-                src: "/assets/js/libs/clipper.js"
+                id: "EaselJS",
+                src: "/bower_components/EaselJS/lib/easeljs-0.8.1.min.js"
             }]);
+
+        intializingQueue.addEventListener('complete',function(){
+
+            queue = new createjs.LoadQueue();
+            queue.installPlugin(createjs.Sound);
+
+            queue.loadManifest([
+                {id: "Class", src: "/assets/js/Class.js" },
+                {id: "Entity", src: "/assets/js/Entity.js" },
+                {id: "Player", src: "/assets/js/Player.js" },
+                {id: "input", src: "/assets/js/input.js" },
+                {id: "sprite", src: "/assets/js/sprite.js" },
+                {id: "inputEngine", src: "/assets/js/inputEngine.js" },
+                {id: "utils", src: "/assets/js/utils.js" },
+                {id: "levels", src: "/assets/js/levels.js" },
+                {id: "clipper", src: "/assets/js/libs/clipper.js" },
+                {id: "intro-sound", src:"/assets/sound/get-ready.mp3" },
+                {id: "bomb-sound", src:"/assets/sound/bomb.mp3"  }
+            ]);
+
+            queue.addEventListener('complete',function(){
+                //createjs.Sound.play("intro-sound");
+
+                var player = new Player()
+                player = {
+                    pos: [0, 0],
+                    speed: 70,
+                    sprite: playerSprite('/assets/img/icons/player.png', [10, 5], [28, 40], 20, [0, 1, 0])
+                };
+
+                base.stages.gameStage = new createjs.Stage("gamecanvas");
+                //base.stages.mapStage = new createjs.Stage("gamecanvas");
+
+                var circle = new createjs.Shape();
+                circle.graphics.beginFill("DeepSkyBlue").drawCircle(0, 0, 50);
+                circle.x = 100;
+                circle.y = 100;
+                var background = new createjs.Container();
+                background.name = "background";
+                background.addChild(circle);
+                base.stages.gameStage.addChild(background);
+                base.stages.gameStage.update();
+
+            });
+        });
+
+
 
     },
     showLevelScreen: function () {
