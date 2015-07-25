@@ -21,11 +21,19 @@ Our project aims at creating a fully-featured clone of the game *Bomberman*, as 
 
   `$ npm install`
 
-3. Start the application
+3. Install bower
+
+  `$ npm install bower -g`
+
+4. Install all of the required bower packages
+
+  `$ bower install`
+
+5. Start the application
 
   `$ npm start`
 
-4. Open your browser and enter the server URL (default port is 3000)
+6. Open your browser and enter the server URL (default port is 3000)
 
   `http://localhost:3000/`
 
