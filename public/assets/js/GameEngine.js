@@ -15,8 +15,8 @@ GameEngine = Class.extend({
     lastTime:Date.now(),
 
     init: function () {
-        var queue,
-            initializingQueue;
+        var filesQueue,
+            librariesQueue;
 
         this.startEngine();
 
@@ -140,8 +140,8 @@ GameEngine = Class.extend({
         this.loadLibraries();
     },
     loadLibraries: function () {
-        var intializingQueue = new createjs.LoadQueue();
-        intializingQueue.loadManifest([
+        var librariesQueue = new createjs.LoadQueue();
+        librariesQueue.loadManifest([
             {
                 id: "SoundJS",
                 src: "/bower_components/SoundJS/lib/soundjs-0.6.1.min.js"
@@ -151,14 +151,18 @@ GameEngine = Class.extend({
                 src: "/bower_components/EaselJS/lib/easeljs-0.8.1.min.js"
             }]);
 
-        intializingQueue.addEventListener('complete', this.loadFiles);
+        librariesQueue.addEventListener('complete', this.loadFiles);
+        librariesQueue.addEventListener('progress',function(e){
+            $('.loadie').html('Loading libraries');
+            $('#gamecontainer').loadie(e.progress);
+        });
     },
     loadFiles: function () {
-        gameEngine.queue = new createjs.LoadQueue();
-        gameEngine.queue.installPlugin(createjs.Sound);
+        gameEngine.filesQueue = new createjs.LoadQueue();
+        gameEngine.filesQueue.installPlugin(createjs.Sound);
 
 
-        gameEngine.queue.loadManifest([
+        gameEngine.filesQueue.loadManifest([
             {id: "Entity", src: "/assets/js/Entity.js"},
             {id: "Player", src: "/assets/js/Player.js"},
             {id: "input", src: "/assets/js/input.js"},
@@ -175,10 +179,14 @@ GameEngine = Class.extend({
         ]);
 
 
-        gameEngine.queue.addEventListener('complete',gameEngine.setupGame);
+        gameEngine.filesQueue.addEventListener('complete',gameEngine.setupGame);
+        gameEngine.filesQueue.addEventListener('progress',function(e){
+            $('.loadie').html('Loading files');
+            $('.loadie').show();
+            $('#gamecontainer').loadie(e.progress);
+        });
     },
     setupGame: function () {
-        console.log('files loaded');
 
         //createjs.Sound.play('bomb-sound');
 
@@ -229,9 +237,9 @@ GameEngine = Class.extend({
         });
     },
     loadLevel:function(levelNumber){
-        var tileWall = new createjs.Bitmap(gameEngine.queue.getResult('tile-wall'));
-        var tileGrass = new createjs.Bitmap(gameEngine.queue.getResult('tile-grass'));
-        var tileWood = new createjs.Bitmap(gameEngine.queue.getResult('tile-wood'));
+        var tileWall = new createjs.Bitmap(gameEngine.filesQueue.getResult('tile-wall'));
+        var tileGrass = new createjs.Bitmap(gameEngine.filesQueue.getResult('tile-grass'));
+        var tileWood = new createjs.Bitmap(gameEngine.filesQueue.getResult('tile-wood'));
 
         var levelData = levels.data[levelNumber],
             color;
