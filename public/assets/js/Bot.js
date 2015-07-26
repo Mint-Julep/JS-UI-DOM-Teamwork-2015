@@ -26,13 +26,6 @@ Bot = Class.extend({
 
 	sprite: undefined,
 
-	direction: {
-		up: false,
-		down: false,
-		left: false,
-		right: false
-	},
-
 	alive: true,
 
 	init: function(id, position, image) {
@@ -55,6 +48,6 @@ Bot = Class.extend({
 
 		this.spriteSheet = new createjs.SpriteSheet(data);
 		this.sprite = new createjs.Sprite(this.spriteSheet, 'left');
-		this.speed = 200;
+		this.speed = 100;
 	}
 });
