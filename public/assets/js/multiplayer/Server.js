@@ -45,6 +45,20 @@ var Server = (function () {
                 gameEngine.otherPlayerJoined(otherPlayerId,false);
             });
 
+            socket.on('player-disconnected',function(otherPlayerId){
+                console.log('will remove player');
+                console.log(otherPlayerId);
+                var otherPlayerSpriteIndex;
+
+                for(var i=0;i<gameEngine.otherPlayers;i++){
+                    if(gameEngine.otherPlayers.id===otherPlayerId){
+                        gameEngine.otherPlayers.splice(i,1);
+                    }
+                }
+
+                gameEngine.containers.otherPlayers.removeChild(gameEngine.containers.otherPlayers.getChildByName('user-'+otherPlayerId));
+            });
+
             socket.on('current-players',function(currentPlayers){
 
                 for(var i=0;i<currentPlayers.length;i++){
@@ -54,12 +68,11 @@ var Server = (function () {
             });
 
             socket.on('other-player-moved',function(clientData){
-                var otherPlayerIndex = gameEngine.findOtherPlayerById(clientData.id);
+                var otherPlayerSprite = gameEngine.findOtherPlayerById(clientData.id);
 
-                if(otherPlayerIndex>=0 && otherPlayerIndex!==-1){
+                if(otherPlayerSprite && otherPlayerSprite!==-1){
                     var newPosition = clientData.newPosition,
-                        animation = clientData.animation,
-                        otherPlayerSprite =  gameEngine.containers.otherPlayers.getChildAt(otherPlayerIndex);
+                        animation = clientData.animation;
 
 
                     otherPlayerSprite.position =  newPosition;

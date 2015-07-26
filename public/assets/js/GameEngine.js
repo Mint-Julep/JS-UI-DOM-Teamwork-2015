@@ -401,7 +401,7 @@ GameEngine = Class.extend({
         initialPosition = initialPosition || false;
         var initialX, initialY;
 
-        if(initialPosition===false) {
+        if(initialPosition===false || initialPosition.x===-1) {
             initialPosition = this.levelData.initialPosition;
         }
 
@@ -410,7 +410,8 @@ GameEngine = Class.extend({
 
 
         var otherPlayer =new Player(otherPlayerId, {x: initialX, y: initialY}, '/assets/img/sprite-other-player.png',true);
-        otherPlayer.name = 'other-player-'+otherPlayerId;
+        otherPlayer.name = 'user-'+otherPlayerId;
+        otherPlayer.sprite.name = 'user-'+otherPlayerId;
         otherPlayer.sprite['playerId']=otherPlayerId*1;
 
         otherPlayer.position=initialPosition;
@@ -425,7 +426,7 @@ GameEngine = Class.extend({
         otherPlayerId=otherPlayerId*1;
         for(var i= 0,len=gameEngine.containers.otherPlayers.children.length;i<len;i++){
             if(gameEngine.containers.otherPlayers.children[i] && gameEngine.containers.otherPlayers.children[i].playerId===otherPlayerId){
-                return i;
+                return gameEngine.containers.otherPlayers.children[i];
             }
 
             return -1;

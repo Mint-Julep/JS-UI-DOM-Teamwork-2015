@@ -87,11 +87,9 @@ io.on('connection', function(client) {
             client.join(level);
             levels[level].playersCount++;
 
-            console.log('info about player joining send');
             client.broadcast.to(level).emit('other-player-joined',playerId);
         }
 
-        console.log('will return current players to client');
         client.emit('current-players',levels[level].players);
 
         levels[level].players.push({
@@ -99,8 +97,18 @@ io.on('connection', function(client) {
             position:{
                 x:-1,
                 y:-1
-            }
+            },
+            socketId:client.id,
         });
+    });
+
+    client.on('disconnect',function(){
+        var playerId=getPlayerIdBySocketId(client.id);
+        console.log('disconnected');
+        console.log(playerId);
+        if(playerId!==-1){
+            client.broadcast.emit('player-disconnected',playerId);
+        }
     });
 
     client.on('player-moved', function(clientData) {
@@ -115,6 +123,27 @@ io.on('connection', function(client) {
 
 });
 
+function getPlayerIdBySocketId(id){
+    for(var level=0;level<levels.length;level++){
+        console.log('checking level '+level);
+        console.log('checking with id '+id);
+        console.log(levels[levels[level]]);
+        var players = levels[levels[level]].players;
+
+        console.log('players:');
+        console.log(players);
+
+        for(var i= 0,len=players.length;i<len;i++){
+            if(players[i].socketId==id){
+                var idToReturn =players[i].id;
+                players.splice(i,1);
+                return idToReturn
+            }
+        }
+    }
+
+    return -1;
+}
 
 function getPlayingUserById(id,level){
     var players = levels[level].players;
