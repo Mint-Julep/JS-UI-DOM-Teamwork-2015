@@ -100,7 +100,23 @@ GameEngine = Class.extend({
             this.keysQueue.remove("right");
         }
 
+        if (input.isDown('Space') || input.isDown('x')) {
+
+            if(this.keysQueue.indexOf("space")===-1){
+                console.log('space pressed');
+                this.keysQueue.push('space');
+                var bomb= new Bomb(1,{x:0,y:0});
+                bomb.sprite.setTransform(this.player.position.x,this.player.position.y +(bomb.size.h/2));
+                gameEngine.containers.playerBombs.addChild(bomb.sprite);
+                bomb.activate( gameEngine.containers.playerBombs);
+            }
+
+        } else{
+            this.keysQueue.remove("space");
+        }
+
         if(moved){
+
             if(this.keysQueue[0]==="up"){
                 if(this.player.canMove("up")) {
                     this.player.position.y -= this.player.speed * deltaTime;
@@ -133,6 +149,7 @@ GameEngine = Class.extend({
                     this.player.sprite.gotoAndPlay('right');
                 }
             }
+
             gameEngine.render();
         } else {
             this.player.clearDirections();
@@ -175,6 +192,7 @@ GameEngine = Class.extend({
         gameEngine.filesQueue.loadManifest([
             {id: "Entity", src: "/assets/js/Entity.js"},
             {id: "Player", src: "/assets/js/Player.js"},
+            {id: "Bomb", src: "/assets/js/Bomb.js"},
             {id: "input", src: "/assets/js/input.js"},
             {id: "sprite", src: "/assets/js/sprite.js"},
             {id: "inputEngine", src: "/assets/js/inputEngine.js"},
@@ -221,8 +239,8 @@ GameEngine = Class.extend({
 
         gameEngine.stage.addChild(gameEngine.containers.background);
         gameEngine.stage.addChild(gameEngine.containers.backgroundDestructable);
-        gameEngine.stage.addChild(gameEngine.containers.player);
         gameEngine.stage.addChild(gameEngine.containers.playerBombs);
+        gameEngine.stage.addChild(gameEngine.containers.player);
         gameEngine.stage.update();
 
         $('.gamelayer').hide();
@@ -280,9 +298,12 @@ GameEngine = Class.extend({
 
     },
     loadPlayer:function(){
-        gameEngine.player.sprite.setTransform(0,0,1.2,1.2);
+        var initialX=this.levelData.initialPosition.x;
+        var initialY=this.levelData.initialPosition.y;
+        gameEngine.player.position=this.levelData.initialPosition;
+
+        gameEngine.player.sprite.setTransform(initialX,initialY,1.2,1.2);
         gameEngine.containers.player.addChild(gameEngine.player.sprite);
-        //gameEngine.containers.player.setTransform(0,0,1.5,1.5);
         gameEngine.stage.update();
     },
     isMapEmptyAt:function(x,y){
