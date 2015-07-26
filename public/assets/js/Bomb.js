@@ -92,6 +92,7 @@ var Bomb = (function () {
             this.explosionSprite.y = y;
 
             stage.addChild(this.explosionSprite);
+            createjs.Sound.play('bomb-sound');
 
             this.exploded = true;
         }

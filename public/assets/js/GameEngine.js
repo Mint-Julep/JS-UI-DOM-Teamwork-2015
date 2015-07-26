@@ -16,6 +16,8 @@ GameEngine = Class.extend({
 
     levelData:undefined,
 
+    muted:false,
+
     init: function () {
         var filesQueue,
             librariesQueue;
@@ -31,22 +33,23 @@ GameEngine = Class.extend({
     },
     main: function () {
         var now = Date.now();
-        var deltaTime = (now - this.lastTime) / 1000.0;
+        gameEngine.deltaTime = (now - this.lastTime) / 1000.0;
 
-        gameEngine.update(deltaTime);
+        gameEngine.update();
         //gameEngine.render();
 
         this.lastTime = now;
 
         requestAnimationFrame(gameEngine.main);
     },
-    update: function (deltaTime) {
+    update: function () {
 
-        gameEngine.handleInput(deltaTime);
+        gameEngine.handleInput();
 
     },
-    handleInput: function (deltaTime) {
+    handleInput: function () {
         var moved=false;
+
 
         if (input.isDown('DOWN') || input.isDown('s')) {
             moved=true;
@@ -58,7 +61,13 @@ GameEngine = Class.extend({
             }
 
         }else {
+            var keysBefore = this.keysQueue.length;
             this.keysQueue.remove("down");
+            var keysAfter = this.keysQueue.length;
+
+            if(keysBefore-keysAfter!==0 && (this.keysQueue.length===0 || (this.keysQueue.length===1 && this.keysQueue[0]==="space"))){
+                server.sendMoveToServer(this.player.position,'stopped');
+            }
         }
 
         if (input.isDown('Up') || input.isDown('w')) {
@@ -70,7 +79,13 @@ GameEngine = Class.extend({
                 }
             }
         }else {
+            var keysBefore = this.keysQueue.length;
             this.keysQueue.remove("up");
+            var keysAfter = this.keysQueue.length;
+
+            if(keysBefore-keysAfter!==0 && (this.keysQueue.length===0 || (this.keysQueue.length===1 && this.keysQueue[0]==="space"))){
+                server.sendMoveToServer(this.player.position,'stopped');
+            }
         }
 
         if (input.isDown('LEFT') || input.isDown('a')) {
@@ -83,7 +98,13 @@ GameEngine = Class.extend({
             }
 
         } else {
+            var keysBefore = this.keysQueue.length;
             this.keysQueue.remove("left");
+            var keysAfter = this.keysQueue.length;
+
+            if(keysBefore-keysAfter!==0 && (this.keysQueue.length===0 || (this.keysQueue.length===1 && this.keysQueue[0]==="space"))){
+                server.sendMoveToServer(this.player.position,'stopped');
+            }
         }
 
         if (input.isDown('Right') || input.isDown('d')) {
@@ -97,13 +118,18 @@ GameEngine = Class.extend({
             }
 
         } else{
+            var keysBefore = this.keysQueue.length;
             this.keysQueue.remove("right");
+            var keysAfter = this.keysQueue.length;
+
+            if(keysBefore-keysAfter!==0 && (this.keysQueue.length===0 || (this.keysQueue.length===1 && this.keysQueue[0]==="space"))){
+                server.sendMoveToServer(this.player.position,'stopped');
+            }
         }
 
         if (input.isDown('Space') || input.isDown('x')) {
 
             if(this.keysQueue.indexOf("space")===-1){
-                console.log('space pressed');
                 this.keysQueue.push('space');
                 var bomb= new Bomb(1,{x:0,y:0});
                 bomb.sprite.setTransform(this.player.position.x,this.player.position.y)
@@ -115,36 +141,63 @@ GameEngine = Class.extend({
             this.keysQueue.remove("space");
         }
 
-        if(moved){
+        if (input.isDown('M')) {
 
+            if(this.keysQueue.indexOf("m")===-1){
+                this.keysQueue.push('m');
+
+                gameEngine.muted=!gameEngine.muted;
+                createjs.Sound.muted=!createjs.Sound.muted;
+
+            }
+
+        } else{
+            this.keysQueue.remove("m");
+        }
+
+        if(moved){
             if(this.keysQueue[0]==="up"){
+
                 if(this.player.canMove("up")) {
-                    this.player.position.y -= this.player.speed * deltaTime;
+                    this.player.position.y -= this.player.speed * gameEngine.deltaTime;
                 }
+
+                server.sendMoveToServer(this.player.position,'faceaway');
+
                 if(this.player.sprite.currentAnimation!=='faceaway') {
                     this.player.sprite.gotoAndPlay('faceaway');
                 }
+
             }
             if(this.keysQueue[0]==="down"){
                 if(this.player.canMove("down")) {
-                    this.player.position.y += this.player.speed * deltaTime;
+                    this.player.position.y += this.player.speed * gameEngine.deltaTime;
                 }
+
+                server.sendMoveToServer(this.player.position,'facein');
+
                 if(this.player.sprite.currentAnimation!=='facein' || this.player.sprite.paused) {
                     this.player.sprite.gotoAndPlay('facein');
                 }
             }
             if(this.keysQueue[0]==="left"){
                 if(this.player.canMove("left")) {
-                    this.player.position.x -= this.player.speed * deltaTime;
+                    this.player.position.x -= this.player.speed * gameEngine.deltaTime;
                 }
+
+                server.sendMoveToServer(this.player.position,'left');
+
                 if(this.player.sprite.currentAnimation!=='left') {
                     this.player.sprite.gotoAndPlay('left');
                 }
             }
             if(this.keysQueue[0]==="right"){
                 if(this.player.canMove("right")) {
-                    this.player.position.x += this.player.speed * deltaTime;
+                    this.player.position.x += this.player.speed * gameEngine.deltaTime;
                 }
+
+                server.sendMoveToServer(this.player.position,'right');
+
                 if(this.player.sprite.currentAnimation!=='right') {
                     this.player.sprite.gotoAndPlay('right');
                 }
@@ -189,7 +242,7 @@ GameEngine = Class.extend({
         gameEngine.filesQueue.installPlugin(createjs.Sound);
 
 
-        gameEngine.filesQueue.loadManifest([
+        var filesToLoad=[
             {id: "Entity", src: "/assets/js/Entity.js"},
             {id: "Player", src: "/assets/js/Player.js"},
             {id: "Bomb", src: "/assets/js/Bomb.js"},
@@ -200,14 +253,23 @@ GameEngine = Class.extend({
             {id: "levels", src: "/assets/js/levels.js"},
             {id: "clipper", src: "/assets/js/libs/clipper.js"},
             {id: "intro-sound", src: "/assets/sound/get-ready.mp3"},
-            {id: "bomb-sound", src: "/assets/sound/bomb.mp3"},
+            {id: "bomb-sound", src: "/assets/sound/explosion.mp3"},
+            {id: "gameplay-sound", src: "/assets/sound/game-play-normal.mp3"},
+            {id: "click", src: "/assets/sound/click.wav"},
             {id: "tile-grass", src: "/assets/img/grass.png"},
             {id: "tile-wall", src: "/assets/img/wall.png"},
             {id: "tile-wood", src: "/assets/img/wood.png"},
             {id: "tile-snow", src: "/assets/img/snow.png"},
             {id: "tile-ice", src: "/assets/img/ice.png"},
             {id: "tile-crate", src: "/assets/img/crate.png"}
-        ]);
+        ];
+
+        if(multiplayer){
+            filesToLoad.unshift({id:"Server",src: "/assets/js/multiplayer/Server.js"});
+            filesToLoad.unshift({id:"ServerResponse",src: "/assets/js/multiplayer/handleServerResponse.js"});
+        }
+
+        gameEngine.filesQueue.loadManifest(filesToLoad);
 
 
         gameEngine.filesQueue.addEventListener('complete',gameEngine.setupGame);
@@ -218,10 +280,17 @@ GameEngine = Class.extend({
         });
     },
     setupGame: function () {
+        if(multiplayer){
+            socket = io.connect(window.location.origin);
+            socket.on('connect',function(){
+               server.startListeningFromServer();
+            });
+            gameEngine.player = new Player(server.playerID, {x: 0, y: 0}, '/assets/img/sprite-fixed.png');
+            gameEngine.otherPlayers = [];
+        } else {
+            gameEngine.player = new Player(gameEngine.id++, {x: 0, y: 0}, '/assets/img/sprite-fixed.png');
+        }
 
-        //createjs.Sound.play('bomb-sound');
-
-        gameEngine.player = new Player(gameEngine.id++, {x: 0, y: 0}, '/assets/img/sprite-fixed.png');
 
         gameEngine.containers = {};
 
@@ -232,6 +301,14 @@ GameEngine = Class.extend({
         gameEngine.containers.background.name = "background";
         gameEngine.containers.backgroundDestructable = new createjs.Container();
         gameEngine.containers.backgroundDestructable.name = "backgroundDestructable";
+
+        if(multiplayer) {
+            gameEngine.containers.otherPlayers = new createjs.Container();
+            gameEngine.containers.otherPlayers.name = "otherPlayers";
+            gameEngine.containers.otherPlayersBombs = new createjs.Container();
+            gameEngine.containers.otherPlayersBombs.name = "otherPlayersBombs";
+        }
+
         gameEngine.containers.player = new createjs.Container();
         gameEngine.containers.player.name = "player";
         gameEngine.containers.playerBombs = new createjs.Container();
@@ -239,6 +316,12 @@ GameEngine = Class.extend({
 
         gameEngine.stage.addChild(gameEngine.containers.background);
         gameEngine.stage.addChild(gameEngine.containers.backgroundDestructable);
+
+        if(multiplayer) {
+            gameEngine.stage.addChild(gameEngine.containers.otherPlayersBombs);
+            gameEngine.stage.addChild(gameEngine.containers.otherPlayers);
+        }
+
         gameEngine.stage.addChild(gameEngine.containers.playerBombs);
         gameEngine.stage.addChild(gameEngine.containers.player);
         gameEngine.stage.update();
@@ -246,12 +329,14 @@ GameEngine = Class.extend({
         $('.gamelayer').hide();
         $('#gamestartscreen').fadeIn();
         gameEngine.loadLevels();
+
+
     },
     loadLevels:function(){
         var html = "";
         for (var i = 0; i < levels.data.length; i++) {
             var level = levels.data[i];
-            html += '<input type="button" value="' + (i + 1) + '">';
+            html += '<input class="click-sound" type="button" value="' + (i + 1) + '">';
         }
 
         $('#levelselectscreen').html(html);
@@ -261,14 +346,17 @@ GameEngine = Class.extend({
             gameEngine.loadLevel(this.value-1);
             gameEngine.loadPlayer();
             $('#levelselectscreen').hide();
-
             $('#gamecanvas').show();
+
+            //createjs.Sound.play('gameplay-sound',"none",0,0,-1,1,0,null,21945);
 
             gameEngine.main();
         });
     },
     loadLevel:function(levelNumber){
         this.levelData = levels.data[levelNumber];
+
+        server.sendLevel(this.levelData.id);
         var color;
 
         var backgroundTile =new createjs.Bitmap(gameEngine.filesQueue.getResult(this.levelData.tiles.background));
@@ -300,7 +388,7 @@ GameEngine = Class.extend({
     loadPlayer:function(){
         var initialX=this.levelData.initialPosition.x;
         var initialY=this.levelData.initialPosition.y;
-        gameEngine.player.position=this.levelData.initialPosition;
+        gameEngine.player.position=JSON.parse(JSON.stringify(this.levelData.initialPosition));
 
         gameEngine.player.sprite.setTransform(initialX,initialY,1.2,1.2);
         gameEngine.containers.player.addChild(gameEngine.player.sprite);
@@ -308,8 +396,41 @@ GameEngine = Class.extend({
     },
     isMapEmptyAt:function(x,y){
         return this.levelData.map[(y/50|0)][(x/50|0)]===0;
-    }
+    },
+    otherPlayerJoined:function(otherPlayerId, initialPosition){
+        initialPosition = initialPosition || false;
+        var initialX, initialY;
 
+        if(initialPosition===false) {
+            initialPosition = this.levelData.initialPosition;
+        }
+
+        initialX = initialPosition.x|0;
+        initialY = initialPosition.y|0;
+
+
+        var otherPlayer =new Player(otherPlayerId, {x: initialX, y: initialY}, '/assets/img/sprite-other-player.png',true);
+        otherPlayer.name = 'other-player-'+otherPlayerId;
+        otherPlayer.sprite['playerId']=otherPlayerId*1;
+
+        otherPlayer.position=initialPosition;
+        otherPlayer.sprite.setTransform(initialX,initialY,1.2,1.2);
+        otherPlayer.sprite.gotoAndStop('facein');
+
+        gameEngine.otherPlayers.push(otherPlayer);
+        gameEngine.containers.otherPlayers.addChild(otherPlayer.sprite);
+        gameEngine.update();
+    },
+    findOtherPlayerById:function(otherPlayerId){
+        otherPlayerId=otherPlayerId*1;
+        for(var i= 0,len=gameEngine.containers.otherPlayers.children.length;i<len;i++){
+            if(gameEngine.containers.otherPlayers.children[i] && gameEngine.containers.otherPlayers.children[i].playerId===otherPlayerId){
+                return i;
+            }
+
+            return -1;
+        }
+    }
 });
 
 gameEngine = new GameEngine();

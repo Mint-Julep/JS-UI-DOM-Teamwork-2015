@@ -11,7 +11,7 @@ require('./models/models.js') ;
 var data=require('./data/index-data');
 var db=data.connect('mongodb://server:server@dogen.mongohq.com:10005/BombGunner');
 
-var users=[];
+var levels=[];
 
 app.use(logger('dev'))
 app.use(express.static(path.join(__dirname, '/public')));
@@ -70,16 +70,62 @@ io.on('connection', function(client) {
 
     });
 
-    client.on('canvas', function(clientData) {
-        client.broadcast.emit('canvas',clientData);
-        //client.broadcast.emit('time',new Date(Date.now()));
+    client.on('player-level',function(clientData){
+        var playerId = clientData.playerId;
+        var level='level'+clientData.levelId;
+        if(levels.indexOf(level)===-1){
+            levels.push(level);
+            levels[level]={
+                id:clientData.levelId,
+                name:level,
+                players:[],
+                playersCount:1
+            };
+
+            client.join(level);
+        } else {
+            client.join(level);
+            levels[level].playersCount++;
+
+            console.log('info about player joining send');
+            client.broadcast.to(level).emit('other-player-joined',playerId);
+        }
+
+        console.log('will return current players to client');
+        client.emit('current-players',levels[level].players);
+
+        levels[level].players.push({
+            id:clientData.playerId,
+            position:{
+                x:-1,
+                y:-1
+            }
+        });
     });
 
-    client.on('playerMoved', function(clientData) {
-        client.broadcast.emit('playerMoved',clientData);
-        //client.broadcast.emit('time',new Date(Date.now()));
+    client.on('player-moved', function(clientData) {
+        client.broadcast.to(clientData.level).emit('other-player-moved',clientData);
+        var userIndex = getPlayingUserById(clientData.id,clientData.level);
+
+        if(userIndex!==-1){
+            ((levels[clientData.level]).players)[userIndex].position =clientData.newPosition;
+            console.log(clientData.newPosition);
+        }
     });
 
 });
+
+
+function getPlayingUserById(id,level){
+    var players = levels[level].players;
+
+    for(var i= 0,len=players.length;i<len;i++){
+        if(players[i].id==id){
+            return i;
+        }
+    }
+
+    return -1;
+}
 
 

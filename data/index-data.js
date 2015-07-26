@@ -44,7 +44,10 @@ var data = {
                 }
 
                 if (user) {
-                    resolve({username:user.name});
+                    resolve({
+                        id:user.id,
+                        username:user.name
+                    });
                     return;
                 } else {
                     User.findOne({name: userName}, function (err, user) {

@@ -15,8 +15,8 @@
 				<span id="score"> Score: 0</span>
 			</div>
 			<div id="gamestartscreen" class="gamelayer">
-				<img  class="clipped-box" src="/assets/img/icons/play.png" alt="Play Game" onclick="gameEngine.showLevelScreen()"><br>
-				<img src="/assets/img/icons/settings.png" alt="Settings">
+				<img  class="clipped-box click-sound" src="/assets/img/icons/play.png" alt="Play Game" onclick="gameEngine.showLevelScreen()"><br>
+				<img class="click-sound" src="/assets/img/icons/settings.png" alt="Settings">
 			</div>
 			<div id="levelselectscreen" class="gamelayer"></div>
 			<div id="loadingscreen" class="gamelayer">
@@ -38,7 +38,7 @@
         <script src="/assets/js/libs/loadie.js"></script>
 		<script src="/bower_components/PreloadJS/lib/preloadjs-0.6.1.min.js"></script>
 
-        <script>var gameType = "singleplayer";</script>
+        <script>var multiPlayer = false;</script>
         <script src="/assets/js/Class.js"></script>
 		<script src="/assets/js/GameEngine.js"></script>
 		<!--load singleplayer scripts-->

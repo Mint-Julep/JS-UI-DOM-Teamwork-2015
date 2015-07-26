@@ -63,17 +63,24 @@ Player = Entity.extend({
         'bomb': 'bomb'
     },
 
-    init: function(id,position,image) {
+    init: function(id,position,image,isOtherPlayer) {
+        isOtherPlayer = isOtherPlayer || false;
+
         this.id=id;
         this.position=position;
         this.playerImage =  image;
         this.frames = {width:25, height:35, count:16, regX: 0, regY:0, spacing:5, margin:0};
+
+        var frequency = 0.2;
+
         this.animations ={
-            facein:[0,3,'facein',0.2],
-            left:[4,7,'left',0.2],
-            faceaway:[8,11,'faceaway',0.2],
-            right:[12,15,'right',0.2]
+            facein:[0,3,'facein',frequency],
+            left:[4,7,'left',frequency],
+            faceaway:[8,11,'faceaway',frequency],
+            right:[12,15,'right',frequency]
         };
+
+        this.animations.framerate=100;
 
         var data = {
             images:[image],
