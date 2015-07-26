@@ -117,7 +117,6 @@ io.on('connection', function(client) {
 
         if(userIndex!==-1){
             ((levels[clientData.level]).players)[userIndex].position =clientData.newPosition;
-            console.log(clientData.newPosition);
         }
     });
 
