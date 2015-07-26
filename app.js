@@ -121,6 +121,13 @@ io.on('connection', function(client) {
         }
     });
 
+    client.on('bomb-placed', function(bombPosition) {
+        console.log('bomb placed by user');
+        console.log(bombPosition);
+        console.log(bombPosition.level);
+        client.broadcast.to(bombPosition.level).emit('bomb-placed',bombPosition);
+    });
+
 });
 
 function getPlayerIdBySocketId(id){

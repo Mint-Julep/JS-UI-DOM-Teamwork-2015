@@ -91,6 +91,15 @@ var Server = (function () {
                 }
             });
 
+            socket.on('bomb-placed',function(bombPosition){
+                console.log('bomb placed at');
+                console.log(bombPosition);
+                var otherUserBomb =  new Bomb(1,{x:0,y:0});
+                otherUserBomb.sprite.setTransform(bombPosition.bombPosition.x,bombPosition.bombPosition.y);
+                gameEngine.containers.otherPlayersBombs.addChild(otherUserBomb.sprite);
+                otherUserBomb.activate( gameEngine.containers.otherPlayersBombs);
+            });
+
 
         }
     });
