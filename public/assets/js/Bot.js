@@ -64,9 +64,36 @@ Bot = Entity.extend({
         this.speed=100;  
     },
     chooseDirection: function() {
-    	// var currDirection,
-    	// check for crossroad
-    	// code for changing direction
+    	var i,
+            tmp,
+            counter = 0,
+            dir = this.direction,
+            directions = [];
+
+            if(canMove('up')) directions.push('up');
+            if(canMove('down')) directions.push('down');
+            if(canMove('left')) directions.push('left');
+            if(canMove('right')) directions.push('right');
+
+        counter = direction.length;
+
+        switch(counter) {
+            case 1: this.direction = directions[0]; break;
+            case 2: if(canMove(dir)) {
+                        this.direction = dir; 
+                    } else {
+                        if(dir === direction[0]) this.direction= direction[1];
+                        else this.direction = direction[0];
+                    }
+                    break;
+            case 3: tmp = Math.floor(Math.random() * 3);
+                    this.direction = directions[tmp];
+                    break;
+            case 4: tmp = Math.floor(Math.random() * 4);
+                    this.direction = directions[tmp];
+                    break;
+            default: break;
+        }
 
     },
     
@@ -103,5 +130,8 @@ Bot = Entity.extend({
                 return false;
             }
         }
+    },
+    move: function() {
+        //code for movement
     }
 });
