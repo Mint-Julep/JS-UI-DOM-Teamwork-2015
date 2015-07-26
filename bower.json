@@ -1,19 +1,10 @@
 {
   "name": "JS-UI-DOM-Teamwork-2015",
-<<<<<<< HEAD
-  "version": "1.0.0",
-  "homepage": "https://github.com/Mint-Julep/JS-UI-DOM-Teamwork-2015",
-  "authors": [
-    "lnikod4s <lyudmil.nikodimov@gmail.com>"
-  ],
-  "description": "A teamwork project based on the popular Nintendo game 'Bomberman'",
-=======
   "version": "0.0.1",
   "homepage": "https://github.com/Mint-Julep/JS-UI-DOM-Teamwork-2015",
   "authors": [
     "Mint Julep Team"
   ],
->>>>>>> 181291f97934a3f54359366350784c6f008af52e
   "license": "MIT",
   "ignore": [
     "**/.*",
@@ -21,9 +12,6 @@
     "bower_components",
     "test",
     "tests"
-<<<<<<< HEAD
-  ]
-=======
   ],
   "dependencies": {
     "jquery": "~1.11",
@@ -31,5 +19,4 @@
     "EaselJS": "0.8.1",
     "SoundJS": "0.6.1"
   }
->>>>>>> 181291f97934a3f54359366350784c6f008af52e
 }
