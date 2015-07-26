@@ -6,7 +6,8 @@ var UserSchema=new Schema({
     name:String,
     pass:String,
     rank:Number,
-    weapon:String
+    weapon:String,
+    token:String
 });
 
 mongoose.model('users',UserSchema);

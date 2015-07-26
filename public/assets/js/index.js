@@ -30,6 +30,7 @@ $('#register').on('click', function () {
 socket.on('log-in', function (data) {
     document.cookie = "bombGunner_userId=" + data.id + "; expires=Thu, 30 Aug 2015 12:00:00 UTC path=/";
     document.cookie = "bombGunner_user=" + data.username + "; expires=Thu, 30 Aug 2015 12:00:00 UTC path=/";
+    document.cookie = "bombGunner_token=" + data.token + "; expires=Thu, 30 Aug 2015 12:00:00 UTC path=/";
     window.location.href = window.location.origin + '/game/multiplayer/';
 });
 

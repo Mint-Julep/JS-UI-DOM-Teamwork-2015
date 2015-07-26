@@ -349,7 +349,7 @@ GameEngine = Class.extend({
             $('#levelselectscreen').hide();
             $('#gamecanvas').show();
 
-            //createjs.Sound.play('gameplay-sound',"none",0,0,-1,1,0,null,21945);
+            createjs.Sound.play('gameplay-sound',"none",0,0,-1,1,0,null,21945);
 
             gameEngine.main();
         });

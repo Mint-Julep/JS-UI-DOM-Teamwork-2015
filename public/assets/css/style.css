@@ -11,6 +11,26 @@ body {
     background-size: cover;
 }
 
+html {
+    height: 100%;
+}
+
+body._404{
+    background-image:url("/assets/img/background404.jpg");
+    background-position: top center;
+    cursor: pointer;
+    height:100%;
+    width: 100%;
+}
+
+body._401{
+    background-image:url("/assets/img/background401.jpg");
+    background-position: top center;
+    cursor: pointer;
+    height:100%;
+    width: 100%;
+}
+
 textarea, input {
     outline: none;
 }

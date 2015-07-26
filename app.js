@@ -4,6 +4,7 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var mongoose=require('mongoose');
 var logger= require('morgan');
+var cookieParser = require('cookie-parser')
 var path = require('path');
 var sha1 = require('sha1');
 
@@ -13,7 +14,8 @@ var db=data.connect('mongodb://server:server@dogen.mongohq.com:10005/BombGunner'
 
 var levels=[];
 
-app.use(logger('dev'))
+app.use(logger('dev'));
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '/public')));
 app.use('/bower_components',  express.static(__dirname + '/bower_components'));
 
@@ -22,9 +24,16 @@ app.get('/game/:typeOfGame', function(req, res,next) {
     if(typeOfGame==='singleplayer'){
         res.sendFile(__dirname+'/public/game-singleplayer.html');
     }else if(typeOfGame==='multiplayer'){
-        res.sendFile(__dirname+'/public/game-multiplayer.html');
+        var userId=req.cookies.bombGunner_userId;
+        var token=req.cookies.bombGunner_token;
+        data.verifyUserToken({id:userId,token:token},function(){
+            res.sendFile(__dirname+'/public/game-multiplayer.html');
+        },function(){
+            res.status(401).sendFile(__dirname+'/public/401.html');
+        });
+
     } else {
-        res.sendFile(__dirname+'/public/404.html');
+        res.status(404).sendFile(__dirname+'/public/404.html');
     }
 });
 app.get('/', function(req, res,next) {
@@ -71,6 +80,9 @@ io.on('connection', function(client) {
     });
 
     client.on('player-level',function(clientData){
+        if(getPlayingUserById(clientData.playerId,false,true)!==-1){
+            client.broadcast.emit('player-disconnected',clientData.playerId);
+        }
         var playerId = clientData.playerId;
         var level='level'+clientData.levelId;
         if(levels.indexOf(level)===-1){
@@ -104,8 +116,7 @@ io.on('connection', function(client) {
 
     client.on('disconnect',function(){
         var playerId=getPlayerIdBySocketId(client.id);
-        console.log('disconnected');
-        console.log(playerId);
+
         if(playerId!==-1){
             client.broadcast.emit('player-disconnected',playerId);
         }
@@ -121,23 +132,15 @@ io.on('connection', function(client) {
     });
 
     client.on('bomb-placed', function(bombPosition) {
-        console.log('bomb placed by user');
-        console.log(bombPosition);
-        console.log(bombPosition.level);
         client.broadcast.to(bombPosition.level).emit('bomb-placed',bombPosition);
     });
 
 });
 
+
 function getPlayerIdBySocketId(id){
     for(var level=0;level<levels.length;level++){
-        console.log('checking level '+level);
-        console.log('checking with id '+id);
-        console.log(levels[levels[level]]);
         var players = levels[levels[level]].players;
-
-        console.log('players:');
-        console.log(players);
 
         for(var i= 0,len=players.length;i<len;i++){
             if(players[i].socketId==id){
@@ -151,12 +154,33 @@ function getPlayerIdBySocketId(id){
     return -1;
 }
 
-function getPlayingUserById(id,level){
-    var players = levels[level].players;
+function getPlayingUserById(id,level,remove){
+    level =  level ||false;
+    remove = remove || false;
 
-    for(var i= 0,len=players.length;i<len;i++){
-        if(players[i].id==id){
-            return i;
+    if(level) {
+        var players = levels[level].players;
+
+        for (var i = 0, len = players.length; i < len; i++) {
+            if (players[i].id == id) {
+                return i;
+            }
+        }
+    } else {
+        for(var level=0;level<levels.length;level++){
+
+            var players = levels[levels[level]].players;
+            console.log(players);
+            for(var i= 0,len=players.length;i<len;i++){
+                if(players[i].id==id){
+                    var idToReturn =players[i].id;
+                    console.log(players[i]);
+                    if(remove) {
+                        players.splice(i, 1);
+                    }
+                    return idToReturn
+                }
+            }
         }
     }
 

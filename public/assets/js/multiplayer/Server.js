@@ -46,8 +46,12 @@ var Server = (function () {
             });
 
             socket.on('player-disconnected',function(otherPlayerId){
-                console.log('will remove player');
                 console.log(otherPlayerId);
+                console.log(playerID);
+                if(otherPlayerId==playerID){
+                    window.location.replace(window.location.origin);
+                    return;
+                }
                 var otherPlayerSpriteIndex;
 
                 for(var i=0;i<gameEngine.otherPlayers;i++){
