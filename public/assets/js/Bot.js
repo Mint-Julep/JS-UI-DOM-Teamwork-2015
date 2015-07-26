@@ -1,11 +1,12 @@
 Bot = Entity.extend({
 	id: 0,
-	
+
 	// Bot direction
 	direction: undefined,
+	oldDirection: 'right',
 	// Moving speed
-	speed: 200,
-	
+	speed: 1,
+
 	// Bot image
 	botImage: undefined,
 
@@ -14,20 +15,13 @@ Bot = Entity.extend({
 
 	frames: {},
 
-	animations:{},
+	animations: {},
 
 	framerate: 0,
 
 	spriteSheet: undefined,
 
 	sprite: undefined,
-
-	direction: {
-		up:false,
-        down:false,
-        left:false,
-        right:false
-	},
 
 	// Bitmap dimensions
 	size: {
@@ -37,101 +31,140 @@ Bot = Entity.extend({
 
 	alive: true,
 
-	init: function(id,direction,position,image) {
-        this.id=id;
-        this.direction=direction;
-        this.position=position;
-        this.playerImage =  image;
-        this.frames = {width:25, height:35, count:16, regX: 0, regY:0, spacing:5, margin:0};
-        this.animations ={
-            //idle:0,
-            facein:[0,3,'facein',0.2],
-            left:[4,7,'left',0.2],
-            faceaway:[8,11,'faceaway',0.2],
-            right:[12,15,'right',0.2]
-        };
 
-        var data = {
-            images:[image],
-            frames:this.frames,
-            animations:this.animations
-        };
+	init: function (id, position, image) {
+		this.id = id;
+		this.position = position;
+		this.botImage = image;
+		this.frames = {width: 30, height: 32, count: 12, regX: 0, regY: 0, spacing: 0, margin: 0};
+		this.animations = {
+			facein: [0, 2, 'facein', 0.2],
+			left: [3, 5, 'left', 0.2],
+			right: [6, 8, 'right', 0.2],
+			faceaway: [9, 11, 'faceaway', 0.2]
+		};
 
-        this.spriteSheet = new createjs.SpriteSheet(data);
+		var data = {
+			images: [image],
+			frames: this.frames,
+			animations: this.animations
+		};
 
-        this.sprite=  new createjs.Sprite(this.spriteSheet,'facein');
+		this.spriteSheet = new createjs.SpriteSheet(data);
+		this.sprite = new createjs.Sprite(this.spriteSheet, 'left');
 
-        this.speed=100;  
-    },
-    chooseDirection: function() {
-    	var i,
-            tmp,
-            counter = 0,
-            dir = this.direction,
-            directions = [];
+	},
+	chooseDirection: function () {
+		var i,
+			tmp,
+			counter = 0,
+			dir = this.direction,
+			directions = [];
 
-            if(canMove('up')) directions.push('up');
-            if(canMove('down')) directions.push('down');
-            if(canMove('left')) directions.push('left');
-            if(canMove('right')) directions.push('right');
+		if (this.canMove('up')) directions.push('up');
+		if (this.canMove('down')) directions.push('down');
+		if (this.canMove('left')) directions.push('left');
+		if (this.canMove('right')) directions.push('right');
 
-        counter = direction.length;
+		counter = directions.length;
 
-        switch(counter) {
-            case 1: this.direction = directions[0]; break;
-            case 2: if(canMove(dir)) {
-                        this.direction = dir; 
-                    } else {
-                        if(dir === direction[0]) this.direction= direction[1];
-                        else this.direction = direction[0];
-                    }
-                    break;
-            case 3: tmp = Math.floor(Math.random() * 3);
-                    this.direction = directions[tmp];
-                    break;
-            case 4: tmp = Math.floor(Math.random() * 4);
-                    this.direction = directions[tmp];
-                    break;
-            default: break;
-        }
+		if ((Math.random() * 300 | 0) === 5) {
+			this.direction = Math.floor((Math.random() * 10 | 0) % counter);
+			return;
+		}
 
-    },
-    
-    canMove:function(direction){
-        var x=this.position.x,
-            y=this.position.y;
+		if (directions.indexOf(this.oldDirection) >= 0) {
+			this.direction = this.oldDirection;
+			return;
+		}
 
-        x=(x+1)|0;
-        y=(y+1)|0;
-        //console.log(x+'  '+y);
+		switch (counter) {
+			case 1:
+				this.direction = directions[0];
+				break;
+			case 2:
+				tmp = Math.floor((Math.random() * 10 | 0) % 2);
+				console.log(tmp);
+				this.direction = directions[tmp];
+				break;
+			case 3:
+				tmp = Math.floor((Math.random() * 10 | 0) % 3);
+				console.log(tmp);
+				this.direction = directions[tmp];
+				break;
+			case 4:
+				tmp = Math.floor((Math.random() * 10 | 0) % 4);
+				console.log(tmp);
+				this.direction = directions[tmp];
+				break;
+			default:
+				break;
+		}
+	},
 
-        if(direction==="down"){
-            if(y<564 && gameEngine.isMapEmptyAt(x+4,y+42) && gameEngine.isMapEmptyAt(x+22,y+42)){
-                return true;
-            } else {
-                return false;
-            }
-        } else if(direction==="up"&& gameEngine.isMapEmptyAt(x+4,y-3) && gameEngine.isMapEmptyAt(x+22,y-3)){
-            if(y>2){
-                return true;
-            } else {
-                return false;
-            }
-        } else if(direction==="left"&& gameEngine.isMapEmptyAt(x-1,y+4) && gameEngine.isMapEmptyAt(x-1,y+39)){
-            if(x>2){
-                return true;
-            } else {
-                return false;
-            }
-        } else if(direction==="right"&& gameEngine.isMapEmptyAt(x+29,y+4) && gameEngine.isMapEmptyAt(x+29,y+39)){
-            if(x<774){
-                return true;
-            } else {
-                return false;
-            }
-        }
-    },
-    move: function() {
-        //code for movement
-    }
+	canMove: function (direction) {
+		var x = this.position.x,
+			y = this.position.y;
+
+		x = (x + 1) | 0;
+		y = (y + 1) | 0;
+		//	console.log(x+'  '+y);
+
+		if (direction === "down") {
+			if (y < 554 && gameEngine.isMapEmptyAt(x + 4, y + 42) && gameEngine.isMapEmptyAt(x + 22, y + 42)) {
+				return true;
+			} else {
+				return false;
+			}
+		} else if (direction === "up" && gameEngine.isMapEmptyAt(x + 4, y - 3) && gameEngine.isMapEmptyAt(x + 22, y - 3)) {
+			if (y > 2) {
+				return true;
+			} else {
+				return false;
+			}
+		} else if (direction === "left" && gameEngine.isMapEmptyAt(x - 1, y + 4) && gameEngine.isMapEmptyAt(x - 1, y + 39)) {
+			if (x > 2) {
+				return true;
+			} else {
+				return false;
+			}
+		} else if (direction === "right" && gameEngine.isMapEmptyAt(x + 29, y + 4) && gameEngine.isMapEmptyAt(x + 29, y + 39)) {
+			if (x < 754) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+	},
+	move: function () {
+		switch (this.direction) {
+			case 'up':
+				this.position.y -= this.speed;
+				if (this.oldDirection !== 'up') {
+					this.sprite.gotoAndPlay('faceaway');
+				}
+				break;
+			case 'down':
+				this.position.y += this.speed;
+				if (this.oldDirection !== 'down') {
+					this.sprite.gotoAndPlay('facein');
+				}
+				break;
+			case 'left':
+				this.position.x -= this.speed;
+				if (this.oldDirection !== 'left') {
+					this.sprite.gotoAndPlay('left');
+				}
+				break;
+			case 'right':
+				this.position.x += this.speed;
+				if (this.oldDirection !== 'right') {
+					this.sprite.gotoAndPlay('right');
+				}
+				break;
+		}
+
+		this.oldDirection = this.direction;
+		this.sprite.setTransform(this.position.x, this.position.y)
+	}
 });

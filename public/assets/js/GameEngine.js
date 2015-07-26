@@ -43,9 +43,9 @@ GameEngine = Class.extend({
 		requestAnimationFrame(gameEngine.main);
 	},
 	update: function(deltaTime) {
-
+		this.bot.chooseDirection();
+		this.bot.move();
 		gameEngine.handleInput(deltaTime);
-
 	},
 	handleInput: function(deltaTime) {
 		var moved = false;
@@ -313,7 +313,8 @@ GameEngine = Class.extend({
 	loadBot: function() {
 		var initialX = this.levelData.initialPosition.x + 655;
 		var initialY = this.levelData.initialPosition.y;
-		gameEngine.bot.position = this.levelData.initialPosition;
+		gameEngine.bot.position.x = initialX;
+		gameEngine.bot.position.y = initialY;
 
 		gameEngine.bot.sprite.setTransform(initialX, initialY, 1.2, 1.2);
 		gameEngine.containers.bot.addChild(gameEngine.bot.sprite);
