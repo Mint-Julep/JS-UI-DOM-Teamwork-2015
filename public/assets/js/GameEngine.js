@@ -1,22 +1,23 @@
-//debugger;
+var multiplayer = multiplayer || false;
+
 GameEngine = Class.extend({
-	id: 0,
+    id: 0,
 
-	player: undefined,
+    player: undefined,
 
-	bot: undefined,
+    bot: undefined,
 
-	stage: undefined,
+    stage: undefined,
 
-	base: this,
+    base: this,
 
-	containers: {},
+    containers: {},
 
-	keysQueue: [],
+    keysQueue: [],
 
-	lastTime: Date.now(),
+    lastTime: Date.now(),
 
-    muted:false,
+    muted: false,
 
     init: function () {
         var filesQueue,
@@ -27,9 +28,9 @@ GameEngine = Class.extend({
     },
     showLevelScreen: function () {
         $('.gamelayer').hide();
-        $('#levelselectscreen').css('opacity',0)
+        $('#levelselectscreen').css('opacity', 0)
         $('#levelselectscreen').show();
-        $('#levelselectscreen').animate({opacity:1});
+        $('#levelselectscreen').animate({opacity: 1});
     },
     main: function () {
         var now = Date.now();
@@ -48,51 +49,51 @@ GameEngine = Class.extend({
 
     },
     handleInput: function () {
-        var moved=false;
+        var moved = false;
 
 
         if (input.isDown('DOWN') || input.isDown('s')) {
-            moved=true;
+            moved = true;
 
-            if(this.keysQueue[0]!=="down"){
-                if(!(this.keysQueue.indexOf("down")>=0)){
+            if (this.keysQueue[0] !== "down") {
+                if (!(this.keysQueue.indexOf("down") >= 0)) {
                     this.keysQueue.unshift("down");
                 }
             }
 
-        }else {
+        } else {
             var keysBefore = this.keysQueue.length;
             this.keysQueue.remove("down");
             var keysAfter = this.keysQueue.length;
 
-            if(keysBefore-keysAfter!==0 && (this.keysQueue.length===0 || (this.keysQueue.length===1 && this.keysQueue[0]==="space"))){
-                server.sendMoveToServer(this.player.position,'stopped');
+            if (multiplayer && keysBefore - keysAfter !== 0 && (this.keysQueue.length === 0 || (this.keysQueue.length === 1 && this.keysQueue[0] === "space"))) {
+                server.sendMoveToServer(this.player.position, 'stopped');
             }
         }
 
         if (input.isDown('Up') || input.isDown('w')) {
-            moved=true;
+            moved = true;
 
-            if(this.keysQueue[0]!=="up"){
-                if(!(this.keysQueue.indexOf("up")>=0)){
+            if (this.keysQueue[0] !== "up") {
+                if (!(this.keysQueue.indexOf("up") >= 0)) {
                     this.keysQueue.unshift("up");
                 }
             }
-        }else {
+        } else {
             var keysBefore = this.keysQueue.length;
             this.keysQueue.remove("up");
             var keysAfter = this.keysQueue.length;
 
-            if(keysBefore-keysAfter!==0 && (this.keysQueue.length===0 || (this.keysQueue.length===1 && this.keysQueue[0]==="space"))){
-                server.sendMoveToServer(this.player.position,'stopped');
+            if (multiplayer && keysBefore - keysAfter !== 0 && (this.keysQueue.length === 0 || (this.keysQueue.length === 1 && this.keysQueue[0] === "space"))) {
+                server.sendMoveToServer(this.player.position, 'stopped');
             }
         }
 
         if (input.isDown('LEFT') || input.isDown('a')) {
-            moved=true;
+            moved = true;
 
-            if(this.keysQueue[0]!=="left"){
-                if(!(this.keysQueue.indexOf("left")>=0)){
+            if (this.keysQueue[0] !== "left") {
+                if (!(this.keysQueue.indexOf("left") >= 0)) {
                     this.keysQueue.unshift("left");
                 }
             }
@@ -102,104 +103,115 @@ GameEngine = Class.extend({
             this.keysQueue.remove("left");
             var keysAfter = this.keysQueue.length;
 
-            if(keysBefore-keysAfter!==0 && (this.keysQueue.length===0 || (this.keysQueue.length===1 && this.keysQueue[0]==="space"))){
-                server.sendMoveToServer(this.player.position,'stopped');
+            if (multiplayer && keysBefore - keysAfter !== 0 && (this.keysQueue.length === 0 || (this.keysQueue.length === 1 && this.keysQueue[0] === "space"))) {
+                server.sendMoveToServer(this.player.position, 'stopped');
             }
         }
 
         if (input.isDown('Right') || input.isDown('d')) {
 
-            moved=true;
+            moved = true;
 
-            if(this.keysQueue[0]!=="right"){
-                if(!(this.keysQueue.indexOf("right")>=0)){
+            if (this.keysQueue[0] !== "right") {
+                if (!(this.keysQueue.indexOf("right") >= 0)) {
                     this.keysQueue.unshift("right");
                 }
             }
 
-        } else{
+        } else {
             var keysBefore = this.keysQueue.length;
             this.keysQueue.remove("right");
             var keysAfter = this.keysQueue.length;
 
-            if(keysBefore-keysAfter!==0 && (this.keysQueue.length===0 || (this.keysQueue.length===1 && this.keysQueue[0]==="space"))){
-                server.sendMoveToServer(this.player.position,'stopped');
+            if (multiplayer && keysBefore - keysAfter !== 0 && (this.keysQueue.length === 0 || (this.keysQueue.length === 1 && this.keysQueue[0] === "space"))) {
+                server.sendMoveToServer(this.player.position, 'stopped');
             }
         }
 
         if (input.isDown('Space') || input.isDown('x')) {
 
-            if(this.keysQueue.indexOf("space")===-1){
+            if (this.keysQueue.indexOf("space") === -1) {
                 this.keysQueue.push('space');
-                server.sendPlacedBombToServer(this.player.position);
-                var bomb= new Bomb(1,{x:0,y:0});
-                bomb.sprite.setTransform(this.player.position.x,this.player.position.y);
+                if (multiplayer) {
+                    server.sendPlacedBombToServer(this.player.position);
+                }
+
+                var bomb = new Bomb(1, {x: 0, y: 0});
+                bomb.sprite.setTransform(this.player.position.x, this.player.position.y);
                 gameEngine.containers.playerBombs.addChild(bomb.sprite);
-                bomb.activate( gameEngine.containers.playerBombs);
+                bomb.activate(gameEngine.containers.playerBombs);
             }
 
-        } else{
+        } else {
             this.keysQueue.remove("space");
         }
 
         if (input.isDown('M')) {
 
-            if(this.keysQueue.indexOf("m")===-1){
+            if (this.keysQueue.indexOf("m") === -1) {
                 this.keysQueue.push('m');
 
-                gameEngine.muted=!gameEngine.muted;
-                createjs.Sound.muted=!createjs.Sound.muted;
+                gameEngine.muted = !gameEngine.muted;
+                createjs.Sound.muted = !createjs.Sound.muted;
 
             }
 
-        } else{
+        } else {
             this.keysQueue.remove("m");
         }
 
-        if(moved){
-            if(this.keysQueue[0]==="up"){
+        if (moved) {
+            if (this.keysQueue[0] === "up") {
 
-                if(this.player.canMove("up")) {
+                if (this.player.canMove("up")) {
                     this.player.position.y -= this.player.speed * gameEngine.deltaTime;
                 }
 
-                server.sendMoveToServer(this.player.position,'faceaway');
+                if (multiplayer) {
+                    server.sendMoveToServer(this.player.position, 'faceaway');
+                }
 
-                if(this.player.sprite.currentAnimation!=='faceaway') {
+                if (this.player.sprite.currentAnimation !== 'faceaway') {
                     this.player.sprite.gotoAndPlay('faceaway');
                 }
 
             }
-            if(this.keysQueue[0]==="down"){
-                if(this.player.canMove("down")) {
+            if (this.keysQueue[0] === "down") {
+                if (this.player.canMove("down")) {
                     this.player.position.y += this.player.speed * gameEngine.deltaTime;
                 }
 
-                server.sendMoveToServer(this.player.position,'facein');
+                if (multiplayer) {
+                    server.sendMoveToServer(this.player.position, 'facein');
+                }
 
-                if(this.player.sprite.currentAnimation!=='facein' || this.player.sprite.paused) {
+                if (this.player.sprite.currentAnimation !== 'facein' || this.player.sprite.paused) {
                     this.player.sprite.gotoAndPlay('facein');
                 }
             }
-            if(this.keysQueue[0]==="left"){
-                if(this.player.canMove("left")) {
+            if (this.keysQueue[0] === "left") {
+                if (this.player.canMove("left")) {
                     this.player.position.x -= this.player.speed * gameEngine.deltaTime;
                 }
 
-                server.sendMoveToServer(this.player.position,'left');
+                if (multiplayer) {
+                    server.sendMoveToServer(this.player.position, 'left');
+                }
 
-                if(this.player.sprite.currentAnimation!=='left') {
+                if (this.player.sprite.currentAnimation !== 'left') {
                     this.player.sprite.gotoAndPlay('left');
                 }
             }
-            if(this.keysQueue[0]==="right"){
-                if(this.player.canMove("right")) {
+            if (this.keysQueue[0] === "right") {
+                if (this.player.canMove("right")) {
                     this.player.position.x += this.player.speed * gameEngine.deltaTime;
                 }
 
-                server.sendMoveToServer(this.player.position,'right');
+                if (multiplayer) {
+                    server.sendMoveToServer(this.player.position, 'right');
+                }
 
-                if(this.player.sprite.currentAnimation!=='right') {
+                if (this.player.sprite.currentAnimation !== 'right') {
                     this.player.sprite.gotoAndPlay('right');
                 }
             }
@@ -233,7 +245,7 @@ GameEngine = Class.extend({
             }]);
 
         librariesQueue.addEventListener('complete', this.loadFiles);
-        librariesQueue.addEventListener('progress',function(e){
+        librariesQueue.addEventListener('progress', function (e) {
             $('.loadie').html('Loading libraries');
             $('#gamecontainer').loadie(e.progress);
         });
@@ -243,7 +255,7 @@ GameEngine = Class.extend({
         gameEngine.filesQueue.installPlugin(createjs.Sound);
 
 
-        var filesToLoad=[
+        var filesToLoad = [
             {id: "Entity", src: "/assets/js/Entity.js"},
             {id: "Player", src: "/assets/js/Player.js"},
             {id: "Bot", src: "/assets/js/Bot.js"},
@@ -266,25 +278,25 @@ GameEngine = Class.extend({
             {id: "tile-crate", src: "/assets/img/crate.png"}
         ];
 
-        if(multiplayer){
-            filesToLoad.unshift({id:"Server",src: "/assets/js/multiplayer/Server.js"});
-            filesToLoad.unshift({id:"ServerResponse",src: "/assets/js/multiplayer/handleServerResponse.js"});
+        if (multiplayer) {
+            filesToLoad.unshift({id: "Server", src: "/assets/js/multiplayer/Server.js"});
+            filesToLoad.unshift({id: "ServerResponse", src: "/assets/js/multiplayer/handleServerResponse.js"});
         }
 
         gameEngine.filesQueue.loadManifest(filesToLoad);
 
 
-        gameEngine.filesQueue.addEventListener('complete',gameEngine.setupGame);
-        gameEngine.filesQueue.addEventListener('progress',function(e){
+        gameEngine.filesQueue.addEventListener('complete', gameEngine.setupGame);
+        gameEngine.filesQueue.addEventListener('progress', function (e) {
             $('.loadie').html('Loading files');
             $('.loadie').show();
             $('#gamecontainer').loadie(e.progress);
         });
     },
     setupGame: function () {
-        if(multiplayer){
+        if (multiplayer) {
             socket = io.connect(window.location.origin);
-            socket.on('connect',function(){
+            socket.on('connect', function () {
                 server.startListeningFromServer();
             });
             gameEngine.player = new Player(server.playerID, {x: 0, y: 0}, '/assets/img/sprite-fixed.png');
@@ -306,7 +318,7 @@ GameEngine = Class.extend({
         gameEngine.containers.backgroundDestructable = new createjs.Container();
         gameEngine.containers.backgroundDestructable.name = "backgroundDestructable";
 
-        if(multiplayer) {
+        if (multiplayer) {
             gameEngine.containers.otherPlayers = new createjs.Container();
             gameEngine.containers.otherPlayers.name = "otherPlayers";
             gameEngine.containers.otherPlayersBombs = new createjs.Container();
@@ -323,7 +335,7 @@ GameEngine = Class.extend({
         gameEngine.stage.addChild(gameEngine.containers.background);
         gameEngine.stage.addChild(gameEngine.containers.backgroundDestructable);
 
-        if(multiplayer) {
+        if (multiplayer) {
             gameEngine.stage.addChild(gameEngine.containers.otherPlayersBombs);
         }
 
@@ -331,7 +343,7 @@ GameEngine = Class.extend({
 
 
         gameEngine.stage.addChild(gameEngine.containers.bot);
-        if(multiplayer){
+        if (multiplayer) {
             gameEngine.stage.addChild(gameEngine.containers.otherPlayers);
         }
 
@@ -344,7 +356,7 @@ GameEngine = Class.extend({
 
 
     },
-    loadLevels:function(){
+    loadLevels: function () {
         var html = "";
         for (var i = 0; i < levels.data.length; i++) {
             var level = levels.data[i];
@@ -355,40 +367,41 @@ GameEngine = Class.extend({
 
         // Set the button click event handlers to load level
         $('#levelselectscreen').find('input').click(function () {
-            gameEngine.loadLevel(this.value-1);
+            gameEngine.loadLevel(this.value - 1);
             gameEngine.loadPlayer();
             gameEngine.loadBot();
             $('#levelselectscreen').hide();
             $('#gamecanvas').show();
 
-            createjs.Sound.play('gameplay-sound',"none",0,0,-1,1,0,null,21945);
+            createjs.Sound.play('gameplay-sound', "none", 0, 0, -1, 1, 0, null, 21945);
 
             gameEngine.main();
         });
     },
-    loadLevel:function(levelNumber){
+    loadLevel: function (levelNumber) {
         this.levelData = levels.data[levelNumber];
-
-        server.sendLevel(this.levelData.id);
+        if (multiplayer) {
+            server.sendLevel(this.levelData.id);
+        }
         var color;
 
-        var backgroundTile =new createjs.Bitmap(gameEngine.filesQueue.getResult(this.levelData.tiles.background));
-        var wallTile =   new createjs.Bitmap(gameEngine.filesQueue.getResult(this.levelData.tiles.wall));
-        var breakableTile =  new createjs.Bitmap(gameEngine.filesQueue.getResult(this.levelData.tiles.breakable));
+        var backgroundTile = new createjs.Bitmap(gameEngine.filesQueue.getResult(this.levelData.tiles.background));
+        var wallTile = new createjs.Bitmap(gameEngine.filesQueue.getResult(this.levelData.tiles.wall));
+        var breakableTile = new createjs.Bitmap(gameEngine.filesQueue.getResult(this.levelData.tiles.breakable));
 
-        this.levelData.map.forEach(function(row,y){
-            row.forEach(function(tile,x){
-                if(tile===0){ // Background tiles
-                    backgroundTile.x=x*50;
-                    backgroundTile.y=y*50;
+        this.levelData.map.forEach(function (row, y) {
+            row.forEach(function (tile, x) {
+                if (tile === 0) { // Background tiles
+                    backgroundTile.x = x * 50;
+                    backgroundTile.y = y * 50;
                     gameEngine.containers.backgroundDestructable.addChild(backgroundTile.clone());
-                }else if(tile===1){ // Object tiles
-                    wallTile.x=x*50;
-                    wallTile.y=y*50;
+                } else if (tile === 1) { // Object tiles
+                    wallTile.x = x * 50;
+                    wallTile.y = y * 50;
                     gameEngine.containers.backgroundDestructable.addChild(wallTile.clone());
-                }else if(tile===2){
-                    breakableTile.x=x*50;
-                    breakableTile.y=y*50;
+                } else if (tile === 2) {
+                    breakableTile.x = x * 50;
+                    breakableTile.y = y * 50;
                     gameEngine.containers.backgroundDestructable.addChild(breakableTile.clone());
                 }
             });
@@ -398,16 +411,16 @@ GameEngine = Class.extend({
         gameEngine.stage.update();
 
     },
-    loadPlayer:function(){
-        var initialX=this.levelData.initialPosition.x;
-        var initialY=this.levelData.initialPosition.y;
-        gameEngine.player.position=JSON.parse(JSON.stringify(this.levelData.initialPosition));
+    loadPlayer: function () {
+        var initialX = this.levelData.initialPosition.x;
+        var initialY = this.levelData.initialPosition.y;
+        gameEngine.player.position = JSON.parse(JSON.stringify(this.levelData.initialPosition));
 
-        gameEngine.player.sprite.setTransform(initialX,initialY,1.2,1.2);
+        gameEngine.player.sprite.setTransform(initialX, initialY, 1.2, 1.2);
         gameEngine.containers.player.addChild(gameEngine.player.sprite);
         gameEngine.stage.update();
     },
-    loadBot: function() {
+    loadBot: function () {
         var initialX = this.levelData.initialPosition.x + 655;
         var initialY = this.levelData.initialPosition.y;
         gameEngine.bot.position.x = initialX;
@@ -417,37 +430,40 @@ GameEngine = Class.extend({
         gameEngine.containers.bot.addChild(gameEngine.bot.sprite);
         gameEngine.stage.update();
     },
-    isMapEmptyAt:function(x,y){
-        return this.levelData.map[(y/50|0)][(x/50|0)]===0;
+    isMapEmptyAt: function (x, y) {
+        return this.levelData.map[(y / 50 | 0)][(x / 50 | 0)] === 0;
     },
-    otherPlayerJoined:function(otherPlayerId, initialPosition){
+    otherPlayerJoined: function (otherPlayerId, initialPosition) {
         initialPosition = initialPosition || false;
         var initialX, initialY;
 
-        if(initialPosition===false || initialPosition.x===-1) {
+        if (initialPosition === false || initialPosition.x === -1) {
             initialPosition = this.levelData.initialPosition;
         }
 
-        initialX = initialPosition.x|0;
-        initialY = initialPosition.y|0;
+        initialX = initialPosition.x | 0;
+        initialY = initialPosition.y | 0;
 
-        var otherPlayer =new Player(otherPlayerId, {x: initialX, y: initialY}, '/assets/img/sprite-other-player.png',true);
-        otherPlayer.name = 'user-'+otherPlayerId;
-        otherPlayer.sprite.name = 'user-'+otherPlayerId;
-        otherPlayer.sprite['playerId']=otherPlayerId*1;
+        var otherPlayer = new Player(otherPlayerId, {
+            x: initialX,
+            y: initialY
+        }, '/assets/img/sprite-other-player.png', true);
+        otherPlayer.name = 'user-' + otherPlayerId;
+        otherPlayer.sprite.name = 'user-' + otherPlayerId;
+        otherPlayer.sprite['playerId'] = otherPlayerId * 1;
 
-        otherPlayer.position=initialPosition;
-        otherPlayer.sprite.setTransform(initialX,initialY,1.2,1.2);
+        otherPlayer.position = initialPosition;
+        otherPlayer.sprite.setTransform(initialX, initialY, 1.2, 1.2);
         otherPlayer.sprite.gotoAndStop('facein');
 
         gameEngine.otherPlayers.push(otherPlayer);
         gameEngine.containers.otherPlayers.addChild(otherPlayer.sprite);
         gameEngine.update();
     },
-    findOtherPlayerById:function(otherPlayerId){
-        otherPlayerId=otherPlayerId*1;
-        for(var i= 0,len=gameEngine.containers.otherPlayers.children.length;i<len;i++){
-            if(gameEngine.containers.otherPlayers.children[i] && gameEngine.containers.otherPlayers.children[i].playerId===otherPlayerId){
+    findOtherPlayerById: function (otherPlayerId) {
+        otherPlayerId = otherPlayerId * 1;
+        for (var i = 0, len = gameEngine.containers.otherPlayers.children.length; i < len; i++) {
+            if (gameEngine.containers.otherPlayers.children[i] && gameEngine.containers.otherPlayers.children[i].playerId === otherPlayerId) {
                 return gameEngine.containers.otherPlayers.children[i];
             }
 
