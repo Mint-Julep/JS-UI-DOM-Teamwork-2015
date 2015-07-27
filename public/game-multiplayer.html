@@ -15,8 +15,8 @@
         <span id="score"> Score: 0</span>
     </div>
     <div id="gamestartscreen" class="gamelayer">
-        <img src="/assets/img/icons/play.png" alt="Play Game" onclick="game.showLevelScreen()"><br>
-        <img src="/assets/img/icons/settings.png" alt="Settings">
+        <img  class="clipped-box click-sound" src="/assets/img/icons/play.png" alt="Play Game" onclick="gameEngine.showLevelScreen()"><br>
+        <img class="click-sound" src="/assets/img/icons/settings.png" alt="Settings">
     </div>
     <div id="levelselectscreen" class="gamelayer"></div>
     <div id="loadingscreen" class="gamelayer">
@@ -34,13 +34,15 @@
         </div>
     </div>
 </div>
+<script>var multiplayer = true;</script>
 <script src="/bower_components/jquery/dist/jquery.min.js"></script>
-<script src="/assets/js/libs/createjs-2015.05.21.min.js"></script>
+<script src="/assets/js/libs/loadie.js"></script>
+<script src="/bower_components/PreloadJS/lib/preloadjs-0.6.1.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 
-<script>var gameType = "multiplayer";</script>
-<script src="/assets/js/game.js"></script>
-//load multiplayer scripts
+<script src="/assets/js/Class.js"></script>
+<script src="/assets/js/GameEngine.js"></script>
+
 
 </body>
 </html>

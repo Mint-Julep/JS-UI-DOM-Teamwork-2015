@@ -6,6 +6,7 @@ var levels = {
 	// Level data
 	data: [
 		{ // First level
+            id:1,
 			name:"Level 1",
 			map:[
 				[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
@@ -32,6 +33,7 @@ var levels = {
             }
 		},
 		{ // Second level
+            id:2,
 			name:"Level 2",
 			map:[
 				[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
@@ -58,6 +60,7 @@ var levels = {
             }
 		},
 		{ // Third level
+            id:3,
 			name:"Level 0",
 			map:[
 				[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],

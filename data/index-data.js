@@ -34,7 +34,8 @@ var data = {
             }
 
             var userName = userData.name,
-                userPass = sha1(userData.pass);
+                userPass = sha1(userData.pass),
+                token = sha1(Date.now());
 
             User.findOne({name: userName, pass: userPass}, function (err, user) {
                 if (err) {
@@ -44,7 +45,15 @@ var data = {
                 }
 
                 if (user) {
-                    resolve({username:user.name});
+                    user.token = token;
+                    user.save();
+
+                    resolve({
+                        id:user.id,
+                        username:user.name,
+                        token:token
+                    });
+
                     return;
                 } else {
                     User.findOne({name: userName}, function (err, user) {
@@ -120,31 +129,14 @@ var data = {
     },
     getUserById: function (id) {
         var promise = new Promise(function (resolve, reject) {
-            User.findById(id, function (err, page) {
+            User.findById(id, function (err, user) {
                 if (err) {
                     reject(err);
                     return;
                 }
-                resolve(page);
+                resolve(user);
             });
         })
-
-        return promise;
-    },
-    getUserByName: function (name) {
-        var promise = new Promise(function (resolve, reject) {
-            User.find({name: name}, function (err, user) {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-                if (user.length === 0) {
-                    reject({message: 'User not found', code: 404});
-                }
-                resolve(user[0]);
-
-            });
-        });
 
         return promise;
     },
@@ -156,6 +148,28 @@ var data = {
                     return;
                 }
                 resolve(users);
+            });
+        });
+
+        return promise;
+    },
+    verifyUserToken: function (user,response,reject) {
+        if(!user.token){
+            reject();
+        }
+
+        var promise = new Promise(function (resolve, reject) {
+            User.find(user, function (err, users) {
+                if (err) {
+                    reject();
+                    return;
+                }
+                if(users){
+                    response();
+                } else {
+                    reject();
+                }
+
             });
         });
 
