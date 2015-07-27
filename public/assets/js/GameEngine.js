@@ -137,7 +137,7 @@ GameEngine = Class.extend({
                 }
 
                 var bomb = new Bomb(1, {x: 0, y: 0});
-                bomb.sprite.setTransform(this.player.position.x, this.player.position.y);
+                bomb.sprite.setTransform(this.player.position.x, this.player.position.y + (bomb.size.w /2));
                 gameEngine.containers.playerBombs.addChild(bomb.sprite);
                 bomb.activate(gameEngine.containers.playerBombs);
             }
