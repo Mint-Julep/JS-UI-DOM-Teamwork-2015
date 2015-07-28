@@ -28,7 +28,7 @@ GameEngine = Class.extend({
     },
     showLevelScreen: function () {
         $('.gamelayer').hide();
-        $('#levelselectscreen').css('opacity', 0)
+        $('#levelselectscreen').css('opacity', 0);
         $('#levelselectscreen').show();
         $('#levelselectscreen').animate({opacity: 1});
     },
