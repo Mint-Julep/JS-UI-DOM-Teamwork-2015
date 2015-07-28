@@ -62,6 +62,19 @@ Utils = Class.extend({
                 createjs.Sound.play('click');
             }
         });
+    },
+    findBonus:function(bonusesArray,x,y){
+        var bonusUnderTile = -1;
+        if(bonusesArray && Array.isArray(bonusesArray)){
+            bonusesArray.forEach(function(singleBonus){
+               if(singleBonus.x===x && singleBonus.y===y){
+                   bonusUnderTile = singleBonus.type;
+                   return;
+               }
+            });
+        }
+
+        return bonusUnderTile;
     }
 });
 

@@ -84,17 +84,14 @@ Bot = Entity.extend({
 				break;
 			case 2:
 				tmp = Math.floor((Math.random() * 10 | 0) % 2);
-				console.log(tmp);
 				this.direction = directions[tmp];
 				break;
 			case 3:
 				tmp = Math.floor((Math.random() * 10 | 0) % 3);
-				console.log(tmp);
 				this.direction = directions[tmp];
 				break;
 			case 4:
 				tmp = Math.floor((Math.random() * 10 | 0) % 4);
-				console.log(tmp);
 				this.direction = directions[tmp];
 				break;
 			default:

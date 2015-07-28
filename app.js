@@ -44,7 +44,6 @@ var port =process.env.PORT || 3000;
 
 server.listen(port,function(e){
     if(e){
-        console.log(e);
         server.close();
     }else{
         console.log('Server listening on port '+port);
@@ -170,11 +169,9 @@ function getPlayingUserById(id,level,remove){
         for(var level=0;level<levels.length;level++){
 
             var players = levels[levels[level]].players;
-            console.log(players);
             for(var i= 0,len=players.length;i<len;i++){
                 if(players[i].id==id){
                     var idToReturn =players[i].id;
-                    console.log(players[i]);
                     if(remove) {
                         players.splice(i, 1);
                     }

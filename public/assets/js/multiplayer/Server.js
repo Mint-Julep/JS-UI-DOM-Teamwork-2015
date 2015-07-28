@@ -18,10 +18,11 @@ var Server = (function () {
                 level:playerLevel
             });
         },
-        sendPlacedBombToServer: function ( bombPosition) {
+        sendPlacedBombToServer: function (bombPosition) {
             socket.emit('bomb-placed', {
                 id: playerID,
                 bombPosition: bombPosition,
+                extendedExplosion:gameEngine.player.extendedExplosion,
                 level:playerLevel
             });
         },
@@ -46,24 +47,25 @@ var Server = (function () {
             });
 
             socket.on('player-disconnected',function(otherPlayerId){
-                console.log(otherPlayerId);
-                console.log(playerID);
+                console.log('player-disconnected',otherPlayerId,gameEngine.otherPlayers);
                 if(otherPlayerId==playerID){
                     window.location.replace(window.location.origin);
                     return;
                 }
                 var otherPlayerSpriteIndex;
 
-                for(var i=0;i<gameEngine.otherPlayers;i++){
-                    if(gameEngine.otherPlayers.id===otherPlayerId){
+                gameEngine.containers.otherPlayers.removeChild(gameEngine.containers.otherPlayers.getChildByName('user-'+otherPlayerId));
+                for(var i=0;i<gameEngine.otherPlayers.length;i++){
+                    if(gameEngine.otherPlayers[i].id==otherPlayerId){
                         gameEngine.otherPlayers.splice(i,1);
                     }
                 }
 
-                gameEngine.containers.otherPlayers.removeChild(gameEngine.containers.otherPlayers.getChildByName('user-'+otherPlayerId));
+                console.log(gameEngine.otherPlayers);
             });
 
             socket.on('current-players',function(currentPlayers){
+                console.log('cp',currentPlayers);
 
                 for(var i=0;i<currentPlayers.length;i++){
 
@@ -72,6 +74,7 @@ var Server = (function () {
             });
 
             socket.on('other-player-moved',function(clientData){
+                console.log('op-moves',clientData);
                 var otherPlayerSprite = gameEngine.findOtherPlayerById(clientData.id);
 
                 if(otherPlayerSprite && otherPlayerSprite!==-1){
@@ -90,15 +93,11 @@ var Server = (function () {
                     if(animation==="stopped"){
                         otherPlayerSprite.gotoAndStop('facein');
                     }
-
-                    //gameEngine.stage.update();
                 }
             });
 
             socket.on('bomb-placed',function(bombPosition){
-                console.log('bomb placed at');
-                console.log(bombPosition);
-                var otherUserBomb =  new Bomb(1,{x:0,y:0});
+                var otherUserBomb =  new Bomb(1,{x:0,y:0},bombPosition.extendedExplosion);
                 otherUserBomb.sprite.setTransform(bombPosition.bombPosition.x,bombPosition.bombPosition.y);
                 gameEngine.containers.otherPlayersBombs.addChild(otherUserBomb.sprite);
                 otherUserBomb.activate( gameEngine.containers.otherPlayersBombs);

@@ -30,8 +30,23 @@ var Bomb = (function () {
             w: 28,
             h: 28
         },
+        coordinatesToCheck: [
+            {x: 0, y: 0},
+            {x: -50, y: 0},
+            {x: 50, y: 0},
+            {x: 0, y: -50},
+            {x: 0, y: 50}
+        ],
 
-        init: function (id, position) {
+        init: function (id, position,extendedExplosion) {
+            if(!extendedExplosion){
+                extendedExplosion = gameEngine.player.extendedExplosion;
+            }
+
+            if(extendedExplosion){
+                this.coordinatesToCheck.push({x:-50,y:50},{x:50,y:50},{x:-50,y:-50},{x:50,y:-50})
+            }
+
             if (!sprite) {
                 var frames = {width: 28, height: 28, regX: 0, regY: 0};
                 var animations = {
@@ -82,8 +97,8 @@ var Bomb = (function () {
 
             stage.removeChild(this.sprite);
 
-            x = this.sprite.x;
-            y = this.sprite.y;
+            x = this.sprite.x-5;
+            y = this.sprite.y-5;
 
             spriteSheet = new createjs.SpriteSheet(data);
             this.explosionSprite = new createjs.Sprite(spriteSheet, 'explode');
@@ -97,6 +112,20 @@ var Bomb = (function () {
                stage.removeChild(base.explosionSprite);
             });
             createjs.Sound.play('bomb-sound');
+
+
+            for(var i=0;i<this.coordinatesToCheck.length;i+=1){
+                var xToCheck = x+this.coordinatesToCheck[i].x,
+                    yToCheck = y+this.coordinatesToCheck[i].y;
+                var toRemove = gameEngine.containers.backgroundDestructable.getObjectUnderPoint(xToCheck, yToCheck);
+                if (gameEngine.containers.backgroundDestructable.removeChild(toRemove)) {
+                    gameEngine.levelData.map[(yToCheck / 50 | 0)][(xToCheck / 50 | 0)] = 0;
+                }
+            }
+
+
+
+            gameEngine.player.avaliableBombs++;
 
             this.exploded = true;
         }

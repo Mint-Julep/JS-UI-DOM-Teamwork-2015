@@ -19,6 +19,7 @@ GameEngine = Class.extend({
 
     muted: false,
 
+
     init: function () {
         var filesQueue,
             librariesQueue;
@@ -130,16 +131,31 @@ GameEngine = Class.extend({
 
         if (input.isDown('Space') || input.isDown('x')) {
 
-            if (this.keysQueue.indexOf("space") === -1) {
-                this.keysQueue.push('space');
-                if (multiplayer) {
-                    server.sendPlacedBombToServer(this.player.position);
-                }
 
-                var bomb = new Bomb(1, {x: 0, y: 0});
-                bomb.sprite.setTransform(this.player.position.x, this.player.position.y + (bomb.size.w /2));
-                gameEngine.containers.playerBombs.addChild(bomb.sprite);
-                bomb.activate(gameEngine.containers.playerBombs);
+            if (this.keysQueue.indexOf("space") === -1) {
+                if (gameEngine.player.avaliableBombs > 0) {
+                    gameEngine.player.avaliableBombs--;
+                    this.keysQueue.push('space');
+
+
+                    var bomb = new Bomb(1, {x: 0, y: 0});
+                    var bombX=this.player.position.x+12,
+                        bombY=this.player.position.y+18;
+
+                    bombX = ((bombX/50)|0)*50;
+                    bombY = ((bombY/50)|0)*50;
+
+                    bombX+=11;
+                    bombY+=11;
+
+                    if (multiplayer) {
+                        server.sendPlacedBombToServer({x:bombX,y:bombY});
+                    }
+
+                    bomb.sprite.setTransform(bombX, bombY);
+                    gameEngine.containers.playerBombs.addChild(bomb.sprite);
+                    bomb.activate(gameEngine.containers.playerBombs);
+                }
             }
 
         } else {
@@ -224,7 +240,6 @@ GameEngine = Class.extend({
         }
     },
     render: function () {
-        //console.log('will render');
         this.player.sprite.x = this.player.position.x;
         this.player.sprite.y = this.player.position.y;
         this.stage.update();
@@ -260,6 +275,7 @@ GameEngine = Class.extend({
             {id: "Player", src: "/assets/js/Player.js"},
             {id: "Bot", src: "/assets/js/Bot.js"},
             {id: "Bomb", src: "/assets/js/Bomb.js"},
+            {id: "BonusHandler", src: "/assets/js/BonusHandler.js"},
             {id: "input", src: "/assets/js/input.js"},
             {id: "sprite", src: "/assets/js/sprite.js"},
             {id: "inputEngine", src: "/assets/js/inputEngine.js"},
@@ -275,7 +291,10 @@ GameEngine = Class.extend({
             {id: "tile-wood", src: "/assets/img/wood.png"},
             {id: "tile-snow", src: "/assets/img/snow.png"},
             {id: "tile-ice", src: "/assets/img/ice.png"},
-            {id: "tile-crate", src: "/assets/img/crate.png"}
+            {id: "tile-crate", src: "/assets/img/crate.png"},
+            {id: "more-speed", src: "/assets/img/moreSpeed.png"},
+            {id: "more-bombs", src: "/assets/img/moreBombs.png"},
+            {id: "more-explosion", src: "/assets/img/moreExplosionRange.png"}
         ];
 
         if (multiplayer) {
@@ -317,6 +336,8 @@ GameEngine = Class.extend({
         gameEngine.containers.background.name = "background";
         gameEngine.containers.backgroundDestructable = new createjs.Container();
         gameEngine.containers.backgroundDestructable.name = "backgroundDestructable";
+        gameEngine.containers.backgroundBonuses = new createjs.Container();
+        gameEngine.containers.backgroundBonuses.name = "backgroundBonuses";
 
         if (multiplayer) {
             gameEngine.containers.otherPlayers = new createjs.Container();
@@ -333,6 +354,7 @@ GameEngine = Class.extend({
         gameEngine.containers.playerBombs.name = "playerBombs";
 
         gameEngine.stage.addChild(gameEngine.containers.background);
+        gameEngine.stage.addChild(gameEngine.containers.backgroundBonuses);
         gameEngine.stage.addChild(gameEngine.containers.backgroundDestructable);
 
         if (multiplayer) {
@@ -389,17 +411,44 @@ GameEngine = Class.extend({
         var wallTile = new createjs.Bitmap(gameEngine.filesQueue.getResult(this.levelData.tiles.wall));
         var breakableTile = new createjs.Bitmap(gameEngine.filesQueue.getResult(this.levelData.tiles.breakable));
 
+        var moreSpeedTile = new createjs.Bitmap(gameEngine.filesQueue.getResult('more-speed'));
+        var moreBombsTile = new createjs.Bitmap(gameEngine.filesQueue.getResult('more-bombs'));
+        var moreExplosionTile = new createjs.Bitmap(gameEngine.filesQueue.getResult('more-explosion'));
+
         this.levelData.map.forEach(function (row, y) {
             row.forEach(function (tile, x) {
+
+
+                var bonusUnderTile = utils.findBonus(gameEngine.levelData.bonuses,x,y);
+                if(bonusUnderTile!==-1){
+                    if(bonusUnderTile==='addSpeed'){
+                        moreSpeedTile.x=x*50;
+                        moreSpeedTile.y=y*50;
+                        gameEngine.containers.backgroundBonuses.addChild(moreSpeedTile.clone());
+                    } else if(bonusUnderTile==='addBomb'){
+                        moreBombsTile.x=x*50;
+                        moreBombsTile.y=y*50;
+                        gameEngine.containers.backgroundBonuses.addChild(moreBombsTile.clone());
+                    } else if(bonusUnderTile==='addExplosionRange'){
+                        moreExplosionTile.x=x*50;
+                        moreExplosionTile.y=y*50;
+                        gameEngine.containers.backgroundBonuses.addChild(moreExplosionTile.clone());
+                    }
+                }
+
                 if (tile === 0) { // Background tiles
                     backgroundTile.x = x * 50;
                     backgroundTile.y = y * 50;
-                    gameEngine.containers.backgroundDestructable.addChild(backgroundTile.clone());
+                    gameEngine.containers.background.addChild(backgroundTile.clone());
                 } else if (tile === 1) { // Object tiles
                     wallTile.x = x * 50;
                     wallTile.y = y * 50;
-                    gameEngine.containers.backgroundDestructable.addChild(wallTile.clone());
+                    gameEngine.containers.background.addChild(wallTile.clone());
                 } else if (tile === 2) {
+                    backgroundTile.x = x * 50;
+                    backgroundTile.y = y * 50;
+                    gameEngine.containers.background.addChild(backgroundTile.clone());
+
                     breakableTile.x = x * 50;
                     breakableTile.y = y * 50;
                     gameEngine.containers.backgroundDestructable.addChild(breakableTile.clone());
@@ -426,7 +475,7 @@ GameEngine = Class.extend({
         gameEngine.bot.position.x = initialX;
         gameEngine.bot.position.y = initialY;
 
-        gameEngine.bot.sprite.setTransform(initialX, initialY, 1.2, 1.2);
+        gameEngine.bot.sprite.setTransform(initialX, initialY, 5, 5);
         gameEngine.containers.bot.addChild(gameEngine.bot.sprite);
         gameEngine.stage.update();
     },
@@ -461,14 +510,14 @@ GameEngine = Class.extend({
         gameEngine.update();
     },
     findOtherPlayerById: function (otherPlayerId) {
-        otherPlayerId = otherPlayerId * 1;
-        for (var i = 0, len = gameEngine.containers.otherPlayers.children.length; i < len; i++) {
-            if (gameEngine.containers.otherPlayers.children[i] && gameEngine.containers.otherPlayers.children[i].playerId === otherPlayerId) {
-                return gameEngine.containers.otherPlayers.children[i];
+        for (var i = 0, len = gameEngine.otherPlayers.length; i < len; i++) {
+            if (gameEngine.otherPlayers[i].id == otherPlayerId) {
+                return gameEngine.otherPlayers[i].sprite;
             }
 
-            return -1;
         }
+
+        return -1;
     }
 });
 

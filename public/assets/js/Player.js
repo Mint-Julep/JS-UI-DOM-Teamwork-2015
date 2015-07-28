@@ -12,16 +12,6 @@ Player = Entity.extend({
     playerImage: undefined,
 
     /**
-     * Max number of bombs user can spawn
-     */
-    bombsMax: 1,
-
-    /**
-     * How far the fire reaches when bomb explodes
-     */
-    bombStrength: 1,
-
-    /**
      * Entity position on map grid
      */
     position: {},
@@ -30,11 +20,13 @@ Player = Entity.extend({
 
     animations:{},
 
-    framerate:0,
-
     spriteSheet:undefined,
 
     sprite:undefined,
+
+    avaliableBombs:2,
+
+    extendedExplosion:false,
 
     direction:{
         up:false,
