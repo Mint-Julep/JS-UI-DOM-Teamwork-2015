@@ -1,0 +1,63 @@
+body,div,h1,img {
+	margin: 0px;
+	padding: 0px;
+}
+
+@font-face {
+    font-family: CodePredators;
+    src: url(../fonts/CodePredators-Regular.ttf);
+}
+@font-face {
+    font-family: Flash;
+    src: url(../fonts/Flash.ttf);
+}
+@font-face {
+    font-family: Crystal;
+    src: url(../fonts/Crystal.ttf);
+}
+@font-face {
+    font-family: Esquisito;
+    src: url(../fonts/Esquisito.ttf);
+}
+
+
+.error {
+	background-image: url("../img/background.jpg");
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-color: rgb(127,172,113);
+    position: fixed; 
+    overflow-y: scroll;
+    width: 100%;
+}
+
+#container {
+	display: inline-block;
+	text-align: center;
+	width: 100%;
+}
+
+#container > img {
+	margin-top: 100px;
+	widows: 400px;
+	height: 400px;
+	display: inline-block;
+}
+
+#container > h1 {
+	font-family: "Flash","CodePredators","Esquisito","Crystal","Arial","Times New Roman",serif;
+	font-size: 70px;
+	text-decoration: underline;
+	font-weight: normal;
+	display: inline-block;
+	margin-top: 200px;
+	vertical-align: top;
+}
+
+#container > h1._401 {
+	color: #DA0E06;
+}
+
+#container > h1._404 {
+	color: #C4A000;
+}

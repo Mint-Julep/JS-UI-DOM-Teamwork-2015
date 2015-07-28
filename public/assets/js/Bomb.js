@@ -90,8 +90,13 @@ var Bomb = (function () {
 
             this.explosionSprite.x = x;
             this.explosionSprite.y = y;
+            var base = this;
 
             stage.addChild(this.explosionSprite);
+            this.explosionSprite.on('animationend',function(){
+               stage.removeChild(base.explosionSprite);
+            });
+            createjs.Sound.play('bomb-sound');
 
             this.exploded = true;
         }

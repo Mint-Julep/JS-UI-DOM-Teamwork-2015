@@ -11,6 +11,26 @@ body {
     background-size: cover;
 }
 
+html {
+    height: 100%;
+}
+
+body._404{
+    background-image:url("/assets/img/background404.jpg");
+    background-position: top center;
+    cursor: pointer;
+    height:100%;
+    width: 100%;
+}
+
+body._401{
+    background-image:url("/assets/img/background401.jpg");
+    background-position: top center;
+    cursor: pointer;
+    height:100%;
+    width: 100%;
+}
+
 textarea, input {
     outline: none;
 }
@@ -46,6 +66,9 @@ textarea, input {
     -webkit-box-shadow: 0px 0px 70px -1px rgba(0,0,0,1);
     -moz-box-shadow: 0px 0px 70px -1px rgba(0,0,0,1);
     box-shadow: 0px 0px 70px -1px rgba(0,0,0,1);
+    position: absolute;
+    left: 50%;
+    margin-left: -25%;
 }
 
 #index-form h2 {
@@ -138,6 +161,14 @@ textarea, input {
 h2 a {
     color: #fff;
     text-decoration: none;
+}
+
+@media (max-width:870px){
+   #index-form{
+       width:90%;
+       left:5%;
+       margin-left: 0;
+   }
 }
 
 /*
