@@ -46,6 +46,7 @@ GameEngine = Class.extend({
     update: function () {
         this.bot.chooseDirection();
         this.bot.move();
+        this.checkCollisions();
         gameEngine.handleInput();
 
     },
@@ -131,12 +132,10 @@ GameEngine = Class.extend({
 
         if (input.isDown('Space') || input.isDown('x')) {
 
-
             if (this.keysQueue.indexOf("space") === -1) {
                 if (gameEngine.player.avaliableBombs > 0) {
                     gameEngine.player.avaliableBombs--;
                     this.keysQueue.push('space');
-
 
                     var bomb = new Bomb(1, {x: 0, y: 0});
                     var bombX=this.player.position.x+12,
@@ -238,6 +237,22 @@ GameEngine = Class.extend({
             this.player.sprite.gotoAndStop('facein');
             this.stage.update();
         }
+    },
+    checkCollisions: function () {
+        if( this.collideWithPlayer(this.bot)){
+            console.info('Game Over');
+        }
+    },
+    collideWithPlayer: function (entity) {
+        var x = this.player.position.x,
+            y = this.player.position.y,
+            width = this.player.size.w -18,
+            height = this.player.size.h -8;
+
+        return (x < entity.position.x + entity.size.w &&
+        x + width > entity.position.x &&
+        y < entity.position.y + entity.size.h &&
+        y + height > entity.position.y )
     },
     render: function () {
         this.player.sprite.x = this.player.position.x;

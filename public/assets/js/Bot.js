@@ -25,8 +25,8 @@ Bot = Entity.extend({
 
 	// Bitmap dimensions
 	size: {
-		w: 48,
-		h: 48
+		w: 32,
+		h: 38
 	},
 
 	alive: true,
@@ -84,14 +84,17 @@ Bot = Entity.extend({
 				break;
 			case 2:
 				tmp = Math.floor((Math.random() * 10 | 0) % 2);
+				console.log(tmp);
 				this.direction = directions[tmp];
 				break;
 			case 3:
 				tmp = Math.floor((Math.random() * 10 | 0) % 3);
+				console.log(tmp);
 				this.direction = directions[tmp];
 				break;
 			case 4:
 				tmp = Math.floor((Math.random() * 10 | 0) % 4);
+				console.log(tmp);
 				this.direction = directions[tmp];
 				break;
 			default:
@@ -125,7 +128,7 @@ Bot = Entity.extend({
 			} else {
 				return false;
 			}
-		} else if (direction === "right" && gameEngine.isMapEmptyAt(x + 29, y + 4) && gameEngine.isMapEmptyAt(x + 29, y + 39)) {
+		} else if (direction === "right" && gameEngine.isMapEmptyAt(x + 39, y + 4) && gameEngine.isMapEmptyAt(x + 39, y + 39)) {
 			if (x < 754) {
 				return true;
 			} else {
@@ -162,6 +165,6 @@ Bot = Entity.extend({
 		}
 
 		this.oldDirection = this.direction;
-		this.sprite.setTransform(this.position.x, this.position.y)
+		this.sprite.setTransform(this.position.x, this.position.y, 1.25, 1.25)
 	}
 });
