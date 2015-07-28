@@ -15,12 +15,24 @@
 				<span id="score"> Score: 0</span>
 			</div>
 			<div id="gamestartscreen" class="gamelayer">
-				<img  class="clipped-box click-sound" src="/assets/img/icons/play.png" alt="Play Game" onclick="gameEngine.showLevelScreen()"><br>
-				<img class="click-sound" src="/assets/img/icons/settings.png" alt="Settings">
+				<img  class="clipped-box click-sound" src="/assets/img/play-button.png" alt="Play Game" onclick="gameEngine.showLevelScreen()"><br>
+				<img class="click-sound" src="/assets/img/settings-button.png" onclick="gameEngine.showSettingsScreen()" alt="Settings">
 			</div>
 			<div id="levelselectscreen" class="gamelayer"></div>
 			<div id="loadingscreen" class="gamelayer">
 				<div id="loadingmessage"></div>
+			</div>
+			<div id="settingsscreen" class="gamelayer">
+				<h1>How to play:</h1>
+				<section>
+					<p><span class="bold">Left Arrow</span> &raquo; move left</p>
+					<p><span class="bold">Right Arrow</span> &raquo; move right</p>
+					<p><span class="bold">Up Arrow</span> &raquo; move up</p>
+					<p><span class="bold">Down Arrow</span> &raquo; move down</p>
+					<p><span class="bold">Spacebar / X</span> &raquo; plant a bomb</p>
+					<p><span class="bold">Enter</span> &raquo; restart level</p>
+					<p><span class="bold">Escape</span> &raquo; return to game menu</p>
+				</section>
 			</div>
 			<div id="endingscreen" class="gamelayer">
 				<div>
