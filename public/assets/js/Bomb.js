@@ -123,7 +123,7 @@ var Bomb = (function () {
                 }
             }
 
-
+            gameEngine.levelData.map[(this.sprite.y / 50 | 0)][(this.sprite.x / 50 | 0)] =0;
 
             gameEngine.player.avaliableBombs++;
 

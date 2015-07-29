@@ -51,8 +51,8 @@ Player = Entity.extend({
      * Bitmap dimensions
      */
     size: {
-        w: 48,
-        h: 48
+        w: 30,
+        h: 40
     },
 
     alive: true,

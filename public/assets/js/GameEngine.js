@@ -138,18 +138,20 @@ GameEngine = Class.extend({
                     this.keysQueue.push('space');
 
                     var bomb = new Bomb(1, {x: 0, y: 0});
-                    var bombX=this.player.position.x+12,
-                        bombY=this.player.position.y+18;
+                    var bombX = this.player.position.x + 12,
+                        bombY = this.player.position.y + 18;
 
-                    bombX = ((bombX/50)|0)*50;
-                    bombY = ((bombY/50)|0)*50;
+                    bombX = ((bombX / 50) | 0) * 50;
+                    bombY = ((bombY / 50) | 0) * 50;
 
-                    bombX+=11;
-                    bombY+=11;
+                    bombX += 11;
+                    bombY += 11;
 
                     if (multiplayer) {
-                        server.sendPlacedBombToServer({x:bombX,y:bombY});
+                        server.sendPlacedBombToServer({x: bombX, y: bombY});
                     }
+
+                    this.levelData.map[(bombY / 50 | 0)][(bombX / 50 | 0)] = 'b';
 
                     bomb.sprite.setTransform(bombX, bombY);
                     gameEngine.containers.playerBombs.addChild(bomb.sprite);
@@ -239,15 +241,15 @@ GameEngine = Class.extend({
         }
     },
     checkCollisions: function () {
-        if( this.collideWithPlayer(this.bot)){
+        if (this.collideWithPlayer(this.bot)) {
             console.info('Game Over');
         }
     },
     collideWithPlayer: function (entity) {
         var x = this.player.position.x,
             y = this.player.position.y,
-            width = this.player.size.w -18,
-            height = this.player.size.h -8;
+            width = this.player.size.w,
+            height = this.player.size.h;
 
         return (x < entity.position.x + entity.size.w &&
         x + width > entity.position.x &&
@@ -434,19 +436,19 @@ GameEngine = Class.extend({
             row.forEach(function (tile, x) {
 
 
-                var bonusUnderTile = utils.findBonus(gameEngine.levelData.bonuses,x,y);
-                if(bonusUnderTile!==-1){
-                    if(bonusUnderTile==='addSpeed'){
-                        moreSpeedTile.x=x*50;
-                        moreSpeedTile.y=y*50;
+                var bonusUnderTile = utils.findBonus(gameEngine.levelData.bonuses, x, y);
+                if (bonusUnderTile !== -1) {
+                    if (bonusUnderTile === 'addSpeed') {
+                        moreSpeedTile.x = x * 50;
+                        moreSpeedTile.y = y * 50;
                         gameEngine.containers.backgroundBonuses.addChild(moreSpeedTile.clone());
-                    } else if(bonusUnderTile==='addBomb'){
-                        moreBombsTile.x=x*50;
-                        moreBombsTile.y=y*50;
+                    } else if (bonusUnderTile === 'addBomb') {
+                        moreBombsTile.x = x * 50;
+                        moreBombsTile.y = y * 50;
                         gameEngine.containers.backgroundBonuses.addChild(moreBombsTile.clone());
-                    } else if(bonusUnderTile==='addExplosionRange'){
-                        moreExplosionTile.x=x*50;
-                        moreExplosionTile.y=y*50;
+                    } else if (bonusUnderTile === 'addExplosionRange') {
+                        moreExplosionTile.x = x * 50;
+                        moreExplosionTile.y = y * 50;
                         gameEngine.containers.backgroundBonuses.addChild(moreExplosionTile.clone());
                     }
                 }
@@ -471,7 +473,6 @@ GameEngine = Class.extend({
             });
         });
 
-
         gameEngine.stage.update();
 
     },
@@ -495,7 +496,22 @@ GameEngine = Class.extend({
         gameEngine.stage.update();
     },
     isMapEmptyAt: function (x, y) {
-        return this.levelData.map[(y / 50 | 0)][(x / 50 | 0)] === 0;
+        if (this.levelData.map[(y / 50 | 0)][(x / 50 | 0)] === 0) {
+            return true;
+        }
+        else if (this.levelData.map[(y / 50 | 0)][(x / 50 | 0)] === 'b') {
+            var matrixX = Math.floor(x / 50);
+            var matrixY = Math.floor(y / 50);
+
+            if (((x / 50) - matrixX > 0.45 && (x / 50) - matrixX < 0.55) ||
+                (( y / 50) - matrixY > 0.45 && (y / 50) - matrixY < 0.55)) {
+                return false
+            }
+            return true;
+        } else {
+            return false;
+        }
+
     },
     otherPlayerJoined: function (otherPlayerId, initialPosition) {
         initialPosition = initialPosition || false;
@@ -529,7 +545,6 @@ GameEngine = Class.extend({
             if (gameEngine.otherPlayers[i].id == otherPlayerId) {
                 return gameEngine.otherPlayers[i].sprite;
             }
-
         }
 
         return -1;
