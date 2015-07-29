@@ -73,7 +73,7 @@ Player = Entity.extend({
         this.id=id;
         this.position=position;
         this.playerImage =  image;
-        this.frames = {width:25, height:35, count:16, regX: 0, regY:0, spacing:5, margin:0};
+        this.frames = {width:25, height:35, count:24, regX: 0, regY:0, spacing:5, margin:0};
 
         var frequency = 0.2;
 
@@ -81,7 +81,8 @@ Player = Entity.extend({
             facein:[0,3,'facein',frequency],
             left:[4,7,'left',frequency],
             faceaway:[8,11,'faceaway',frequency],
-            right:[12,15,'right',frequency]
+            right:[12,15,'right',frequency],
+            die:[16,23,'die',frequency/3]
         };
 
         this.animations.framerate=100;
@@ -93,7 +94,7 @@ Player = Entity.extend({
         };
 
         this.spriteSheet = new createjs.SpriteSheet(data);
-        this.sprite=  new createjs.Sprite(this.spriteSheet,'facein');
+        this.sprite=  new createjs.Sprite(this.spriteSheet,'die');
         this.speed=100;
 
     },

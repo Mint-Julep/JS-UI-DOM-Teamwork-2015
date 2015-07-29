@@ -36,12 +36,13 @@ Bot = Entity.extend({
 		this.id = id;
 		this.position = position;
 		this.botImage = image;
-		this.frames = {width: 30, height: 32, count: 12, regX: 0, regY: 0, spacing: 0, margin: 0};
+		this.frames = {width: 32, height: 32, count: 18, regX: 0, regY: 0, spacing: 0, margin: 0};
 		this.animations = {
 			facein: [0, 2, 'facein', 0.2],
 			left: [3, 5, 'left', 0.2],
 			right: [6, 8, 'right', 0.2],
-			faceaway: [9, 11, 'faceaway', 0.2]
+			faceaway: [9, 11, 'faceaway', 0.2],
+            die:[12,17,'die',0.2/3]
 		};
 
 		var data = {

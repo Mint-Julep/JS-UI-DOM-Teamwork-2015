@@ -7,6 +7,8 @@ GameEngine = Class.extend({
 
     bot: undefined,
 
+    bots:[],
+
     stage: undefined,
 
     base: this,
@@ -33,6 +35,10 @@ GameEngine = Class.extend({
         $('#levelselectscreen').show();
         $('#levelselectscreen').animate({opacity: 1});
     },
+    showSettingsScreen:function(){
+        $('.gamelayer').hide();
+        $('#settingsscreen').hide().slideDown(1000);
+    },
     main: function () {
         var now = Date.now();
         gameEngine.deltaTime = (now - this.lastTime) / 1000.0;
@@ -44,10 +50,30 @@ GameEngine = Class.extend({
         requestAnimationFrame(gameEngine.main);
     },
     update: function () {
-        this.bot.chooseDirection();
-        this.bot.move();
-        this.checkCollisions();
-        gameEngine.handleInput();
+        if(gameEngine.player.alive) {
+            for(var i=0;i<gameEngine.bots.length;i++) {
+                if (gameEngine.bots[i].alive) {
+                    gameEngine.bots[i].chooseDirection();
+                    gameEngine.bots[i].move();
+                    this.checkCollisions();
+                }
+            }
+            gameEngine.handleInput();
+        }else {
+            if(gameEngine.player.sprite.currentAnimation!=='die'){
+                gameEngine.player.sprite.gotoAndPlay('die');
+                gameEngine.player.sprite.on('animationend',function(){
+                    gameEngine.player.sprite.stop();
+                });
+            }
+
+            for(var i=0;i<gameEngine.bots.length;i++) {
+
+                gameEngine.bots[i].sprite.stop();
+            }
+            gameEngine.stage.update();
+        }
+
 
     },
     handleInput: function () {
@@ -182,6 +208,7 @@ GameEngine = Class.extend({
 
                 if (this.player.canMove("up")) {
                     this.player.position.y -= this.player.speed * gameEngine.deltaTime;
+                    bonusHandler.getBonusAt(this.player.position.x,this.player.position.y,'up');
                 }
 
                 if (multiplayer) {
@@ -196,6 +223,7 @@ GameEngine = Class.extend({
             if (this.keysQueue[0] === "down") {
                 if (this.player.canMove("down")) {
                     this.player.position.y += this.player.speed * gameEngine.deltaTime;
+                    bonusHandler.getBonusAt(this.player.position.x,this.player.position.y,'down');
                 }
 
                 if (multiplayer) {
@@ -209,6 +237,7 @@ GameEngine = Class.extend({
             if (this.keysQueue[0] === "left") {
                 if (this.player.canMove("left")) {
                     this.player.position.x -= this.player.speed * gameEngine.deltaTime;
+                    bonusHandler.getBonusAt(this.player.position.x,this.player.position.y,'left');
                 }
 
                 if (multiplayer) {
@@ -222,6 +251,7 @@ GameEngine = Class.extend({
             if (this.keysQueue[0] === "right") {
                 if (this.player.canMove("right")) {
                     this.player.position.x += this.player.speed * gameEngine.deltaTime;
+                    bonusHandler.getBonusAt(this.player.position.x,this.player.position.y,'right');
                 }
 
                 if (multiplayer) {
@@ -241,9 +271,14 @@ GameEngine = Class.extend({
         }
     },
     checkCollisions: function () {
-        if (this.collideWithPlayer(this.bot)) {
-            console.info('Game Over');
+
+        for (var i = 0; i < gameEngine.bots.length; i++) {
+            var currentBot = gameEngine.bots[i];
+            if(this.collideWithPlayer(currentBot)){
+                this.killPlayer();
+            }
         }
+
     },
     collideWithPlayer: function (entity) {
         var x = this.player.position.x,
@@ -251,8 +286,9 @@ GameEngine = Class.extend({
             width = this.player.size.w,
             height = this.player.size.h;
 
-        return (x < entity.position.x + entity.size.w &&
-        x + width > entity.position.x &&
+
+        return (x < entity.position.x+5 + entity.size.w-5 &&
+        x + width > entity.position.x+5 &&
         y < entity.position.y + entity.size.h &&
         y + height > entity.position.y )
     },
@@ -292,16 +328,19 @@ GameEngine = Class.extend({
             {id: "Player", src: "/assets/js/Player.js"},
             {id: "Bot", src: "/assets/js/Bot.js"},
             {id: "Bomb", src: "/assets/js/Bomb.js"},
+            {id: "levels", src: "/assets/js/levels.js"},
             {id: "BonusHandler", src: "/assets/js/BonusHandler.js"},
             {id: "input", src: "/assets/js/input.js"},
             {id: "sprite", src: "/assets/js/sprite.js"},
             {id: "inputEngine", src: "/assets/js/inputEngine.js"},
             {id: "utils", src: "/assets/js/utils.js"},
-            {id: "levels", src: "/assets/js/levels.js"},
             {id: "clipper", src: "/assets/js/libs/clipper.js"},
             {id: "intro-sound", src: "/assets/sound/get-ready.mp3"},
             {id: "bomb-sound", src: "/assets/sound/explosion.mp3"},
             {id: "gameplay-sound", src: "/assets/sound/game-play-normal.mp3"},
+            {id: "powerup-sound", src: "/assets/sound/powerup.wav"},
+            {id: "die-sound", src: "/assets/sound/shutdown.wav"},
+            {id: "game-over", src: "/assets/sound/end.mp3"},
             {id: "click", src: "/assets/sound/click.wav"},
             {id: "tile-grass", src: "/assets/img/grass.png"},
             {id: "tile-wall", src: "/assets/img/wall.png"},
@@ -335,13 +374,12 @@ GameEngine = Class.extend({
             socket.on('connect', function () {
                 server.startListeningFromServer();
             });
-            gameEngine.player = new Player(server.playerID, {x: 0, y: 0}, '/assets/img/sprite-fixed.png');
+            gameEngine.player = new Player(server.playerID, {x: 0, y: 0}, '/assets/img/sprite-fixed2.png');
             gameEngine.otherPlayers = [];
         } else {
             gameEngine.player = new Player(gameEngine.id++, {x: 0, y: 0}, '/assets/img/sprite-fixed.png');
         }
 
-        gameEngine.bot = new Bot(gameEngine.id++, {x: 0, y: 0}, '/assets/img/bot.png');
 
 
         gameEngine.containers = {};
@@ -397,8 +435,8 @@ GameEngine = Class.extend({
     },
     loadLevels: function () {
         var html = "";
-        for (var i = 0; i < levels.data.length; i++) {
-            var level = levels.data[i];
+        for (var i = 0; i < levelHandler.data.length; i++) {
+            var level = levelHandler.data[i];
             html += '<input class="click-sound" type="button" value="' + (i + 1) + '">';
         }
 
@@ -418,7 +456,7 @@ GameEngine = Class.extend({
         });
     },
     loadLevel: function (levelNumber) {
-        this.levelData = levels.data[levelNumber];
+        this.levelData = levelHandler.getLevel(levelNumber);
         if (multiplayer) {
             server.sendLevel(this.levelData.id);
         }
@@ -486,13 +524,18 @@ GameEngine = Class.extend({
         gameEngine.stage.update();
     },
     loadBot: function () {
-        var initialX = this.levelData.initialPosition.x + 655;
-        var initialY = this.levelData.initialPosition.y;
-        gameEngine.bot.position.x = initialX;
-        gameEngine.bot.position.y = initialY;
+        for(var i=0;i<this.levelData.bots.length;i++) {
+            console.log(this.levelData.bots,this.levelData.bots[i]);
+            var initialX = this.levelData.bots[i].x*50;
+            var initialY = this.levelData.bots[i].y*50;
+            var newBot = new Bot(gameEngine.id++, {x: 0, y: 0}, '/assets/img/bot2.png');
+            newBot.position.x = initialX;
+            newBot.position.y = initialY;
+            newBot.sprite.setTransform(initialX, initialY, 5, 5);
 
-        gameEngine.bot.sprite.setTransform(initialX, initialY, 5, 5);
-        gameEngine.containers.bot.addChild(gameEngine.bot.sprite);
+            gameEngine.containers.bot.addChild(newBot.sprite);
+            gameEngine.bots.push(newBot)
+        }
         gameEngine.stage.update();
     },
     isMapEmptyAt: function (x, y) {
@@ -548,6 +591,27 @@ GameEngine = Class.extend({
         }
 
         return -1;
+    },
+    removeBot:function(bot){
+        for (var i = 0; i < gameEngine.bots.length; i++) {
+            if(gameEngine.bots[i]===bot){
+
+                gameEngine.bots.splice(i,1);
+            }
+
+        }
+    },
+    killPlayer:function(){
+        createjs.Sound.stop();
+        createjs.Sound.play('die-sound');
+        createjs.Sound.play('game-over','none',2200);
+        gameEngine.player.alive=false;
+        if(gameEngine.player.sprite.currentAnimation!=='die'){
+            gameEngine.player.sprite.gotoAndPlay('die');
+            gameEngine.player.sprite.on('animationend',function(){
+                gameEngine.player.sprite.stop();
+            });
+        }
     }
 });
 

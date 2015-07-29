@@ -2,7 +2,7 @@
 //                      Levels                            //
 ////////////////////////////////////////////////////////////
 
-var levels = {
+var LevelHandler = Class.extend({
 	// Level data
 	data: [
 		{ // First level
@@ -10,10 +10,10 @@ var levels = {
 			name:"Level 1",
 			map:[
 				[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-                [1,0,0,0,2,2,2,2,0,2,2,2,0,0,0,1],
-                [1,0,0,1,1,1,2,2,2,2,1,1,1,0,0,1],
-                [1,0,0,1,0,1,1,2,2,1,1,0,1,0,0,1],
-                [1,2,2,2,2,2,1,2,2,1,2,2,2,2,2,1],
+                [1,0,0,0,0,0,0,0,0,0,0,0,0,2,0,1],
+                [1,0,0,1,1,1,2,2,2,2,1,1,0,0,2,1],
+                [1,0,0,1,0,1,1,2,2,1,1,0,1,2,0,1],
+                [1,2,0,0,2,2,1,2,2,1,2,2,2,2,2,1],
                 [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1],
                 [1,2,2,2,2,1,1,2,2,1,1,0,0,0,0,1],
                 [1,0,0,0,1,1,2,2,2,2,1,1,0,0,0,1],
@@ -32,9 +32,15 @@ var levels = {
                 y:55
             },
             bonuses:[
-                { x:8,y:3, type:'addBomb' },
-                { x:1,y:4, type:'addExplosionRange' },
+                { x:8,y:1, type:'addBomb' },
+                { x:4,y:1, type:'addExplosionRange' },
                 { x:1,y:5, type:'addSpeed' },
+            ],
+            bots:[
+                {x:14,y:1},
+                {x:4,y:3},
+                {x:3,y:7},
+                {x:3,y:10},
             ]
 		},
 		{ // Second level
@@ -91,5 +97,31 @@ var levels = {
                 y:205
             }
 		}
-	]
-};
+	],
+    currentLevel:-1,
+    init:function(){
+
+    },
+    getLevel:function(levelNumber){
+        this.currentLevel =  levelNumber;
+        return this.data[levelNumber];
+    },
+    checkMapForBonusAt:function(x,y){
+        x=((x/50)|0);
+        y=((y/50)|0);
+
+        for(var i= 0,len=this.data[this.currentLevel].bonuses.length;i<len;i++){
+            if(this.data[this.currentLevel].bonuses[i].x===x && this.data[this.currentLevel].bonuses[i].y===y){
+                createjs.Sound.play('powerup-sound');
+                var bonus = this.data[this.currentLevel].bonuses.splice(i,1)[0];
+                var toRemove = gameEngine.containers.backgroundBonuses.getObjectUnderPoint(x*50, y*50);
+                gameEngine.containers.backgroundBonuses.removeChild(toRemove);
+                return bonus.type;
+            }
+        }
+
+        return -1;
+    }
+});
+
+levelHandler = new LevelHandler();

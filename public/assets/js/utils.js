@@ -75,7 +75,16 @@ Utils = Class.extend({
         }
 
         return bonusUnderTile;
-    }
+    },
+	getBotBySprite:function(botSrpite){
+        for (var i = 0; i < gameEngine.bots.length; i++) {
+            if(gameEngine.bots[i].sprite===botSrpite){
+                return gameEngine.bots[i];
+            }
+        }
+
+        return -1;
+	}
 });
 
 utils = new Utils();
