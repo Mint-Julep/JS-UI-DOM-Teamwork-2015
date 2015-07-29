@@ -113,21 +113,72 @@ var Bomb = (function () {
             });
             createjs.Sound.play('bomb-sound');
 
-
-            for(var i=0;i<this.coordinatesToCheck.length;i+=1){
-                var xToCheck = x+this.coordinatesToCheck[i].x,
-                    yToCheck = y+this.coordinatesToCheck[i].y;
-                var toRemove = gameEngine.containers.backgroundDestructable.getObjectUnderPoint(xToCheck, yToCheck);
-                if (gameEngine.containers.backgroundDestructable.removeChild(toRemove)) {
-                    gameEngine.levelData.map[(yToCheck / 50 | 0)][(xToCheck / 50 | 0)] = 0;
-                }
-            }
-
-
+            this.kill(x,y);
 
             gameEngine.player.avaliableBombs++;
 
             this.exploded = true;
+        },
+        kill:function(x,y){
+            this.removeBreakableTiles(x,y);
+            this.killBots(x,y);
+            this.killPlayer(x,y);
+        },
+        removeBreakableTiles:function(x,y){
+            for(var i=0;i<this.coordinatesToCheck.length;i+=1){
+                var xToCheck = x+this.coordinatesToCheck[i].x,
+                    yToCheck = y+this.coordinatesToCheck[i].y;
+                var toRemove = gameEngine.containers.backgroundDestructable.getObjectUnderPoint(xToCheck, yToCheck);
+
+                if (gameEngine.containers.backgroundDestructable.removeChild(toRemove)) {
+                    gameEngine.levelData.map[(yToCheck / 50 | 0)][(xToCheck / 50 | 0)] = 0;
+                }
+            }
+        },
+        killBots:function(x,y){
+            for(var i=0;i<this.coordinatesToCheck.length;i+=1){
+                var additionalCoordinatesToCheck = [{x:0,y:15},{x:15,y:0},{x:15,y:30},{x:30,y:15}];
+
+                for(var j=0;j<additionalCoordinatesToCheck.length;j++) {
+
+
+                    var xToCheck = x + this.coordinatesToCheck[i].x + additionalCoordinatesToCheck[j].x+4,
+                        yToCheck = y + this.coordinatesToCheck[i].y + additionalCoordinatesToCheck[j].y+4;
+                    var toRemove = gameEngine.containers.bot.getObjectUnderPoint(xToCheck, yToCheck);
+
+                    if(toRemove){
+                        var botToKill = utils.getBotBySprite(toRemove);
+                        if(botToKill===-1){
+                            return;
+                        }
+                        botToKill.alive=false;
+                        botToKill.sprite.gotoAndPlay('die');
+                        botToKill.sprite.on('animationend',function(){
+                            gameEngine.containers.bot.removeChild(botToKill.sprite);
+                            gameEngine.removeBot(botToKill);
+                        });
+
+                    }
+                }
+            }
+        },
+        killPlayer:function(x,y){
+            for(var i=0;i<this.coordinatesToCheck.length;i+=1){
+                var additionalCoordinatesToCheck = [{x:0,y:15},{x:15,y:0},{x:15,y:30},{x:30,y:15}];
+
+                for(var j=0;j<additionalCoordinatesToCheck.length;j++) {
+
+
+                    var xToCheck = x + this.coordinatesToCheck[i].x + additionalCoordinatesToCheck[j].x+4,
+                        yToCheck = y + this.coordinatesToCheck[i].y + additionalCoordinatesToCheck[j].y+4;
+                    var toRemove = gameEngine.containers.player.getObjectUnderPoint(xToCheck, yToCheck);
+
+                    if(toRemove){
+                        gameEngine.killPlayer();
+
+                    }
+                }
+            }
         }
     });
 
