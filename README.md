@@ -11,34 +11,48 @@ Our project aims at creating a fully-featured clone of the game *Bomberman*, as 
 
 ## Features
 
-- Three single player levels
+Apart from the things adopted from the classical game, our version also includes:
+
+- Three unique single player levels
+- Bonuses
 
 ## Installation
 
-1. Fire up a terminal
-```
-$ git clone https://github.com/Mint-Julep/JS-UI-DOM-Teamwork-2015
-```
+1. Fire up a terminal. Clone the repository
+
+    ```
+    $ git clone https://github.com/Mint-Julep/JS-UI-DOM-Teamwork-2015
+    ```
+
 2. Install all of the required Node.js packages
-```
-$ npm install
-```
+
+    ```
+    $ npm install
+    ```
+
 3. Install bower
-```
-$ npm install bower -g
-```
+
+    ```
+    $ npm install bower -g
+    ```
+
 4. Install all of the required bower packages
-```
-$ bower install
-```
+
+    ```
+    $ bower install
+    ```
+
 5. Start the application
-```
-$ npm start
-```
+
+    ```
+    $ npm start
+    ```
+
 6. Open your browser and enter the server URL (default port is 3000)
-```
-http://localhost:3000/
-```
+
+    ```
+    http://localhost:3000/
+    ```
 
 ## Technologies
 
@@ -56,4 +70,10 @@ http://localhost:3000/
 * Lyudmil Nikodimov (lnikod4s)
 * Ivaylo Arnaudov (r1f)
 * Toma Nikolov (TomaNikolov)
+* Vasil Todorov (vTodorov)
 
+## Preview
+
+<p align="center">
+  <img src="http://i.imgur.com/YqDQZET.png" width="700" height="337" />
+</p>
