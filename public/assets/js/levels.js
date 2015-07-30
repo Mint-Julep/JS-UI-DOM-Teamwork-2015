@@ -66,9 +66,19 @@ var LevelHandler = Class.extend({
                 breakable:"tile-ice"
             },
             initialPosition:{
-                x:55,
-                y:55
-            }
+                x: 55,
+                y: 55
+            },
+            bonuses:[
+                { x: 3, y: 10, type: 'addExplosionRange' },
+                { x: 13, y: 8, type: 'addSpeed' }
+            ],
+            bots:[
+                { x: 7, y: 10 },
+                { x: 10, y: 2 },
+                { x: 5, y: 6 },
+                { x: 13, y: 6 }
+            ]
 		},
 		{ // Third level
             id:3,
