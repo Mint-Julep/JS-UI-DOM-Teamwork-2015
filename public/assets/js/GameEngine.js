@@ -38,6 +38,11 @@ GameEngine = Class.extend({
     showSettingsScreen:function(){
         $('.gamelayer').hide();
         $('#settingsscreen').hide().slideDown(1000);
+
+        $('#return-to-main-menu').on('click', function(){
+            $('#settingsscreen').hide();
+            $('#gamestartscreen').show();
+        });
     },
     main: function () {
         var now = Date.now();

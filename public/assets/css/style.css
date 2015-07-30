@@ -200,7 +200,6 @@ h2 a {
 .nintendo-btn {
 	font: 40px PressStart2P, Consolas, MS;
 	color: #D9DEE1;
-	border: 1px solid #EEF0F5;
 	text-shadow: 0 0 2px #000;
 }
 
@@ -288,6 +287,7 @@ h2 a {
 #endingscreen p {
 	margin: 25px 170px;
 	padding: 10px;
+	border: 1px solid #EEF0F5;
 }
 
 #endingscreen p img {
@@ -306,7 +306,7 @@ h2 a {
 	width: 70%;
 	height: 70%;
 	margin: 120px;
-	font-family: Consolas, Menlo, Monaco, monospace;
+	font-family:PressStart2P, Consolas, Menlo, Monaco, monospace;
 	text-align: center;
 	border: 3px solid black;
 	border-radius: 10px;
