@@ -162,7 +162,9 @@ var LevelHandler = Class.extend({
             if(this.data[this.currentLevel].bonuses[i].x===x && this.data[this.currentLevel].bonuses[i].y===y){
                 createjs.Sound.play('powerup-sound');
                 var bonus = this.data[this.currentLevel].bonuses.splice(i,1)[0];
-                server.sendBonusUpdate(this.data[this.currentLevel].bonuses);
+                if(multiPlayer) {
+                    server.sendBonusUpdate(this.data[this.currentLevel].bonuses);
+                }
                 var toRemove = gameEngine.containers.backgroundBonuses.getObjectUnderPoint(x*50, y*50);
                 gameEngine.containers.backgroundBonuses.removeChild(toRemove);
                 return bonus.type;

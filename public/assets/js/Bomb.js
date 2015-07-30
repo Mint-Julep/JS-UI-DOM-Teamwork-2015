@@ -138,7 +138,9 @@ var Bomb = (function () {
 
                 if (gameEngine.containers.backgroundDestructable.removeChild(toRemove)) {
                     gameEngine.levelData.map[(yToCheck / 50 | 0)][(xToCheck / 50 | 0)] = 0;
-                    server.sendMapUpdate(gameEngine.levelData.map);
+                    if(multiPlayer) {
+                        server.sendMapUpdate(gameEngine.levelData.map);
+                    }
                 }
             }
         },
