@@ -615,6 +615,15 @@ GameEngine = Class.extend({
                 gameEngine.player.sprite.stop();
             });
         }
+        gameEngine.gameOver()
+    },
+    gameOver: function(){
+      var $endingScreen =  $('#endingscreen');
+        $endingScreen.show();
+
+        $('#playAgain').on('click', function(){
+            window.location.reload();
+        })
     }
 });
 

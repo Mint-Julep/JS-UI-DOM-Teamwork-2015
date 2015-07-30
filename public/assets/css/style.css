@@ -2,6 +2,11 @@
     ==== GENERAL ====
 */
 
+@font-face {
+	font-family: 'PressStart2P'; /*a name to be used later*/
+	src: url("/assets/fonts/PressStart2P.ttf"); /*URL to font*/
+}
+
 body {
 	font-family: Century Gothic, Arial, sans-serif;
 	background-color: #7FAC71;
@@ -192,6 +197,18 @@ h2 a {
 	display: none;
 }
 
+.nintendo-btn {
+	font: 40px PressStart2P, Consolas, MS;
+	color: #D9DEE1;
+	border: 1px solid #EEF0F5;
+	text-shadow: 0 0 2px #000;
+}
+
+.nintendo-btn:hover{
+	color: #B0ABA8;
+	cursor: default;
+}
+
 /* Game Starting Menu Screen */
 #gamestartscreen {
 	padding-top: 250px;
@@ -261,21 +278,16 @@ h2 a {
 /* Ending Screen */
 #endingscreen {
 	text-align: center;
+	height: 600px;
+	background: rgba(1, 1, 1, 0.8);
 }
 
 #endingscreen div {
-	height: 430px;
-	padding-top: 50px;
-	border: 1px;
-	background: rgba(1, 1, 1, 0.5);
-	text-align: left;
-	padding-left: 100px;
 }
 
 #endingscreen p {
-	font: 20px Comic Sans MS;
-	text-shadow: 0 0 2px #000;
-	color: white;
+	margin: 25px 170px;
+	padding: 10px;
 }
 
 #endingscreen p img {
