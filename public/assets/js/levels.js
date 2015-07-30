@@ -41,7 +41,8 @@ var LevelHandler = Class.extend({
                 {x:4,y:3},
                 {x:3,y:7},
                 {x:3,y:10},
-            ]
+            ],
+            img:'level1.png'
 		},
 		{ // Second level
             id:2,
@@ -78,7 +79,12 @@ var LevelHandler = Class.extend({
                 { x: 10, y: 2 },
                 { x: 5, y: 6 },
                 { x: 13, y: 6 }
-            ]
+            ],
+            initialPosition:{
+                x:55,
+                y:55
+            },
+            img:'level2.png'
 		},
 		{ // Third level
             id:3,
@@ -116,16 +122,37 @@ var LevelHandler = Class.extend({
                 { x: 10, y: 2 },
                 { x: 5, y: 6 },
                 { x: 13, y: 6 }
-            ]
+            ],
+            initialPosition:{
+                x:55,
+                y:205
+            },
+            img:'level3.png'
 		}
 	],
     currentLevel:-1,
     init:function(){
 
     },
-    getLevel:function(levelNumber){
-        this.currentLevel =  levelNumber;
-        return this.data[levelNumber];
+    getLevel:function(levelNumber,callback){
+        this.currentLevel = levelNumber;
+        if(multiplayer){
+            server.getCurrentLevel('level'+(levelNumber+1),function(err,level){
+                if(err){
+                    gameEngine.levelData = levelHandler.data[levelNumber];
+                    callback();
+                } else {
+                    levelHandler.data[levelNumber] = level.map;
+                    gameEngine.levelData = levelHandler.data[levelNumber];
+                    callback();
+                }
+            });
+        }else {
+            gameEngine.levelData = levelHandler.data[levelNumber];
+            callback();
+        }
+
+
     },
     checkMapForBonusAt:function(x,y){
         x=((x/50)|0);
@@ -135,6 +162,7 @@ var LevelHandler = Class.extend({
             if(this.data[this.currentLevel].bonuses[i].x===x && this.data[this.currentLevel].bonuses[i].y===y){
                 createjs.Sound.play('powerup-sound');
                 var bonus = this.data[this.currentLevel].bonuses.splice(i,1)[0];
+                server.sendBonusUpdate(this.data[this.currentLevel].bonuses);
                 var toRemove = gameEngine.containers.backgroundBonuses.getObjectUnderPoint(x*50, y*50);
                 gameEngine.containers.backgroundBonuses.removeChild(toRemove);
                 return bonus.type;
