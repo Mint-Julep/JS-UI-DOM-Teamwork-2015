@@ -118,7 +118,7 @@ var Bomb = (function () {
                stage.removeChild(base.explosionSprite);
             });
             createjs.Sound.play('bomb-sound');
-
+            gameEngine.levelData.map[(this.sprite.y / 50 | 0)][(this.sprite.x / 50 | 0)] =0;
             this.kill(x,y);
 
             gameEngine.player.avaliableBombs++;
@@ -138,6 +138,7 @@ var Bomb = (function () {
 
                 if (gameEngine.containers.backgroundDestructable.removeChild(toRemove)) {
                     gameEngine.levelData.map[(yToCheck / 50 | 0)][(xToCheck / 50 | 0)] = 0;
+                    server.sendMapUpdate(gameEngine.levelData.map);
                 }
             }
         },
@@ -145,7 +146,7 @@ var Bomb = (function () {
             for(var i=0;i<this.coordinatesToCheck.length;i+=1){
                 var additionalCoordinatesToCheck = [{x:0,y:15},{x:15,y:0},{x:15,y:30},{x:30,y:15}];
 
-            gameEngine.levelData.map[(this.sprite.y / 50 | 0)][(this.sprite.x / 50 | 0)] =0;
+
                 for(var j=0;j<additionalCoordinatesToCheck.length;j++) {
 
 
