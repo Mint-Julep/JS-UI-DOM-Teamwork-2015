@@ -15,10 +15,23 @@
         <span id="score"> Score: 0</span>
     </div>
     <div id="gamestartscreen" class="gamelayer">
-        <img  class="clipped-box click-sound" src="/assets/img/play-button.png" alt="Play Game" onclick="gameEngine.showLevelScreen()"><br>
-        <img class="click-sound" src="/assets/img/settings-button.png" onclick="gameEngine.showSettingsScreen()" alt="Settings">
+        <div>
+            <h2>
+                BOMBER MAN
+            </h2>
+            <p  class="clipped-box click-sound nintendo-btn"  onclick="gameEngine.showLevelScreen()">Play</p>
+            <p class="click-sound nintendo-btn" onclick="gameEngine.showSettingsScreen()">Settings</p>
+            <div class="footer">
+                <p>TM AND &copy; 2015 TEAM: MINT-JULEP </p>
+                <p>LICENSED BY </p>
+                <p>MIT</p>
+            </div>
+        </div>
     </div>
-    <div id="levelselectscreen" class="gamelayer"></div>
+    <div id="levelselectscreen" class="gamelayer">
+        <h1>Levels</h1>
+        <div id="levelselectscreen-container"></div>
+    </div>
     <div id="loadingscreen" class="gamelayer">
         <div id="loadingmessage"></div>
     </div>

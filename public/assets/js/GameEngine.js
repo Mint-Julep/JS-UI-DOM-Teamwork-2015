@@ -448,10 +448,9 @@ GameEngine = Class.extend({
             html += '<input class="click-sound level-picture-' + (i + 1) + '" type="button" value="' + (i + 1) + '">';
         }
 
-        $('#levelselectscreen').html(html);
-
+        $('#levelselectscreen-container').html(html);
         // Set the button click event handlers to load level
-        $('#levelselectscreen').find('input').click(function () {
+        $('#levelselectscreen-container').find('input').click(function () {
             gameEngine.loadLevel(this.value - 1);
             gameEngine.loadPlayer();
             gameEngine.loadBot();

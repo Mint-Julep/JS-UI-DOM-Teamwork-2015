@@ -181,9 +181,10 @@ h2 a {
 */
 
 #gamecontainer {
+	font-family: PressStart2P, Consolas, serif;
 	width: 800px;
 	height: 600px;
-	background: url(../img/splashscreen.jpg);
+	background-color: black;
 	margin: 0 auto;
 	border: 1px solid black;
 	-webkit-box-shadow: 0px 0px 70px -1px rgba(0, 0, 0, 1);
@@ -199,18 +200,19 @@ h2 a {
 
 .nintendo-btn {
 	font: 40px PressStart2P, Consolas, MS;
-	color: #D9DEE1;
+	color: #B0ABA8;
 	text-shadow: 6px 5px #303333;
 }
 
 .nintendo-btn:hover{
-	color: #B0ABA8;
+	color: #D9DEE1;
 	cursor: default;
 }
 
 /* Game Starting Menu Screen */
 #gamestartscreen {
-	padding-top: 100px;
+	font-family: PressStart2P, Consolas, serif;
+	padding-top: 20px;
 	text-align: center;
 
 }
@@ -221,13 +223,48 @@ h2 a {
 }
 
 #gamestartscreen p{
-	font-size: 60px;
+	color:#D9DEE1;
+	font-size: 35px;
+}
+#gamestartscreen h2{
+	color:#0050f8;
+	font-size: 105px;
+	margin: 0;
+	text-shadow: 6px 5px #000090;
+}
+
+#gamestartscreen div{
+	 background: rgba(1, 1, 1, 0.5);
+	 margin-top: 25px;
+	 padding: 5px;
+}
+
+#gamestartscreen .nintendo-btn{
+	font: 40px PressStart2P, Consolas, MS;
+	color: #B0ABA8;
+	text-shadow: 6px 5px #303333;
+}
+
+#gamestartscreen .nintendo-btn:hover{
+	color: #D9DEE1;
+	cursor: default;
+}
+
+#gamestartscreen .footer p{
+	font-size: 20px;
 }
 
 /* Level Selection Screen */
 #levelselectscreen {
-	padding-top: 150px;
-	padding-left: 40px;
+	padding-top: 60px;
+	text-align: center;
+}
+
+#levelselectscreen h1{
+	font-size: 50px;
+	margin-bottom: 50px;
+	color:#D9DEE1;
+	text-shadow: 2px 2px #303333
 }
 
 #levelselectscreen input {
@@ -321,25 +358,36 @@ h2 a {
 	color: white;
 }
 
+/* Setting screen */
+
 #settingsscreen {
-	width: 70%;
-	height: 70%;
-	margin: 120px;
-	font-family:PressStart2P, Consolas, Menlo, Monaco, monospace;
+	width: 100%;
+	height: 100%;
 	text-align: center;
 	border: 3px solid black;
-	border-radius: 10px;
-	-moz-box-shadow: inset 0 0 10px #000000;
-	-webkit-box-shadow: inset 0 0 10px #000000;
-	box-shadow: inset 0 0 10px #000000;
-	background: #a9e4f7; /* Old browsers */
-	background: -moz-linear-gradient(top, #a9e4f7 0%, #0fb4e7 100%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #a9e4f7), color-stop(100%, #0fb4e7)); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(top, #a9e4f7 0%, #0fb4e7 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(top, #a9e4f7 0%, #0fb4e7 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(top, #a9e4f7 0%, #0fb4e7 100%); /* IE10+ */
-	background: linear-gradient(to bottom, #a9e4f7 0%, #0fb4e7 100%); /* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#a9e4f7', endColorstr='#0fb4e7', GradientType=0); /* IE6-9 */
+}
+
+#settingsscreen h1{
+	margin: 55px;
+	font-size: 45px;
+	color:#0050f8;
+	text-shadow: 6px 5px #000090;
+}
+
+#settingsscreen p{
+	color:#D9DEE1;
+	text-shadow: 2px 2px #303333
+}
+
+#settingsscreen .nintendo-btn{
+	font: 40px PressStart2P, Consolas, MS;
+	color: #B0ABA8;
+	text-shadow: 6px 5px #303333;
+}
+
+#settingsscreen .nintendo-btn:hover{
+	color: #D9DEE1;
+	cursor: default;
 }
 
 #settingsscreen .bold {
