@@ -445,7 +445,7 @@ GameEngine = Class.extend({
         var html = "";
         for (var i = 0; i < levelHandler.data.length; i++) {
             var level = levelHandler.data[i];
-            html += '<input class="click-sound" type="button" value="' + (i + 1) + '">';
+            html += '<input class="click-sound level-picture-' + (i + 1) + '" type="button" value="' + (i + 1) + '">';
         }
 
         $('#levelselectscreen').html(html);
