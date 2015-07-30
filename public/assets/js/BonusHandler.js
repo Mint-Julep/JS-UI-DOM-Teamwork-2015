@@ -38,6 +38,49 @@ BonusHandler = Class.extend({
             this.addBonus(levelHandler.checkMapForBonusAt(x+27,y+37));
         }
     },
+    changeBonuses: function (newBonuses) {
+        if(Array.isArray(newBonuses) && newBonuses.length<1){
+            gameEngine.levelData.bonuses=[];
+            gameEngine.containers.backgroundBonuses.removeAllChildren();
+        }
+
+        bonusToRemove = gameEngine.levelData.bonuses.filter(function (bonus) {
+            for (var i = 0; i < newBonuses.length; i++) {
+                if (bonus.x === newBonuses[i].x &&
+                    bonus.y === newBonuses[i].y &&
+                    bonus.type === newBonuses[i].type) {
+
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        });
+
+        console.log('current bonuses',gameEngine.levelData.bonuses);
+        console.log('all bonuses to remove ',bonusToRemove);
+
+
+        if(bonusToRemove){
+            for(var j=0;j<bonusToRemove.length;j++) {
+                var currentBonusToRemove = bonusToRemove[j];
+
+                for (var i = 0; i < gameEngine.levelData.bonuses.length; i++) {
+                    if (gameEngine.levelData.bonuses[i] === currentBonusToRemove) {
+                        var x = currentBonusToRemove.x,
+                            y = currentBonusToRemove.y;
+
+                        var imageToRemove = gameEngine.containers.backgroundBonuses.getObjectUnderPoint(x * 50, y * 50);
+                        gameEngine.containers.backgroundBonuses.removeChild(imageToRemove);
+                    }
+                }
+
+                gameEngine.levelData.bonuses = newBonuses;
+            }
+        }
+
+
+    }
 
 });
 

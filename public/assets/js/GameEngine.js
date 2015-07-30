@@ -19,7 +19,7 @@ GameEngine = Class.extend({
 
     lastTime: Date.now(),
 
-    muted: false,
+    muted: true,
 
 
     init: function () {
@@ -442,83 +442,108 @@ GameEngine = Class.extend({
 
     },
     loadLevels: function () {
-        var html = "";
-        for (var i = 0; i < levelHandler.data.length; i++) {
-            var level = levelHandler.data[i];
-            html += '<input class="click-sound level-picture-' + (i + 1) + '" type="button" value="' + (i + 1) + '">';
+
+        if(multiplayer) {
+            server.getAllMaps(function (allMaps) {
+                if (allMaps) {
+                    levelHandler.data = allMaps;
+                }
+
+                initializeLevels();
+            });
+        } else {
+            initializeLevels();
         }
 
-        $('#levelselectscreen-container').html(html);
-        // Set the button click event handlers to load level
-        $('#levelselectscreen-container').find('input').click(function () {
-            gameEngine.loadLevel(this.value - 1);
+        function initializeLevels(){
+            var html = "";
+
+            for (var i = 0; i < levelHandler.data.length; i++) {
+                var level = levelHandler.data[i];
+                html += '<input class="click-sound level-picture-' + (i + 1) + '" type="button" value="' + (i + 1) + '">';
+            }
+
+            $('#levelselectscreen-container').html(html);
+            // Set the button click event handlers to load level
+            $('#levelselectscreen-container').find('input').click(function () {
+                gameEngine.loadLevel(this.value - 1);
+
+            });
+        }
+    },
+    loadLevel: function (levelNumber) {
+        levelHandler.getLevel(levelNumber, function () {
+
+            if (multiplayer) {
+                server.sendLevel(gameEngine.levelData.id);
+            }
+
+            console.log('my level data',gameEngine.levelData);
+            var color;
+
+            console.log('my level data tile',gameEngine.levelData.tiles);
+            //tiles =gameEngine.levelData.tiles;
+            console.log('background',gameEngine.levelData.tiles.background);
+            var backgroundTile = new createjs.Bitmap(gameEngine.filesQueue.getResult(gameEngine.levelData.tiles.background));
+            var wallTile = new createjs.Bitmap(gameEngine.filesQueue.getResult(gameEngine.levelData.tiles.wall));
+            var breakableTile = new createjs.Bitmap(gameEngine.filesQueue.getResult(gameEngine.levelData.tiles.breakable));
+
+            var moreSpeedTile = new createjs.Bitmap(gameEngine.filesQueue.getResult('more-speed'));
+            var moreBombsTile = new createjs.Bitmap(gameEngine.filesQueue.getResult('more-bombs'));
+            var moreExplosionTile = new createjs.Bitmap(gameEngine.filesQueue.getResult('more-explosion'));
+
+            gameEngine.levelData.map.forEach(function (row, y) {
+                row.forEach(function (tile, x) {
+
+
+                    var bonusUnderTile = utils.findBonus(gameEngine.levelData.bonuses, x, y);
+                    if (bonusUnderTile !== -1) {
+                        if (bonusUnderTile === 'addSpeed') {
+                            moreSpeedTile.x = x * 50;
+                            moreSpeedTile.y = y * 50;
+                            gameEngine.containers.backgroundBonuses.addChild(moreSpeedTile.clone());
+                        } else if (bonusUnderTile === 'addBomb') {
+                            moreBombsTile.x = x * 50;
+                            moreBombsTile.y = y * 50;
+                            gameEngine.containers.backgroundBonuses.addChild(moreBombsTile.clone());
+                        } else if (bonusUnderTile === 'addExplosionRange') {
+                            moreExplosionTile.x = x * 50;
+                            moreExplosionTile.y = y * 50;
+                            gameEngine.containers.backgroundBonuses.addChild(moreExplosionTile.clone());
+                        }
+                    }
+
+                    if (tile === 0) { // Background tiles
+                        backgroundTile.x = x * 50;
+                        backgroundTile.y = y * 50;
+                        gameEngine.containers.background.addChild(backgroundTile.clone());
+                    } else if (tile === 1) { // Object tiles
+                        wallTile.x = x * 50;
+                        wallTile.y = y * 50;
+                        gameEngine.containers.background.addChild(wallTile.clone());
+                    } else if (tile === 2) {
+                        backgroundTile.x = x * 50;
+                        backgroundTile.y = y * 50;
+                        gameEngine.containers.background.addChild(backgroundTile.clone());
+
+                        breakableTile.x = x * 50;
+                        breakableTile.y = y * 50;
+                        gameEngine.containers.backgroundDestructable.addChild(breakableTile.clone());
+                    }
+                });
+            });
+
+            gameEngine.stage.update();
+
             gameEngine.loadPlayer();
             gameEngine.loadBot();
             $('#levelselectscreen').hide();
             $('#gamecanvas').show();
 
-            createjs.Sound.play('gameplay-sound', "none", 0, 0, -1, 1, 0, null, 21945);
+            //createjs.Sound.play('gameplay-sound', "none", 0, 0, -1, 1, 0, null, 21945);
 
             gameEngine.main();
         });
-    },
-    loadLevel: function (levelNumber) {
-        this.levelData = levelHandler.getLevel(levelNumber);
-        if (multiplayer) {
-            server.sendLevel(this.levelData.id);
-        }
-        var color;
-
-        var backgroundTile = new createjs.Bitmap(gameEngine.filesQueue.getResult(this.levelData.tiles.background));
-        var wallTile = new createjs.Bitmap(gameEngine.filesQueue.getResult(this.levelData.tiles.wall));
-        var breakableTile = new createjs.Bitmap(gameEngine.filesQueue.getResult(this.levelData.tiles.breakable));
-
-        var moreSpeedTile = new createjs.Bitmap(gameEngine.filesQueue.getResult('more-speed'));
-        var moreBombsTile = new createjs.Bitmap(gameEngine.filesQueue.getResult('more-bombs'));
-        var moreExplosionTile = new createjs.Bitmap(gameEngine.filesQueue.getResult('more-explosion'));
-
-        this.levelData.map.forEach(function (row, y) {
-            row.forEach(function (tile, x) {
-
-
-                var bonusUnderTile = utils.findBonus(gameEngine.levelData.bonuses, x, y);
-                if (bonusUnderTile !== -1) {
-                    if (bonusUnderTile === 'addSpeed') {
-                        moreSpeedTile.x = x * 50;
-                        moreSpeedTile.y = y * 50;
-                        gameEngine.containers.backgroundBonuses.addChild(moreSpeedTile.clone());
-                    } else if (bonusUnderTile === 'addBomb') {
-                        moreBombsTile.x = x * 50;
-                        moreBombsTile.y = y * 50;
-                        gameEngine.containers.backgroundBonuses.addChild(moreBombsTile.clone());
-                    } else if (bonusUnderTile === 'addExplosionRange') {
-                        moreExplosionTile.x = x * 50;
-                        moreExplosionTile.y = y * 50;
-                        gameEngine.containers.backgroundBonuses.addChild(moreExplosionTile.clone());
-                    }
-                }
-
-                if (tile === 0) { // Background tiles
-                    backgroundTile.x = x * 50;
-                    backgroundTile.y = y * 50;
-                    gameEngine.containers.background.addChild(backgroundTile.clone());
-                } else if (tile === 1) { // Object tiles
-                    wallTile.x = x * 50;
-                    wallTile.y = y * 50;
-                    gameEngine.containers.background.addChild(wallTile.clone());
-                } else if (tile === 2) {
-                    backgroundTile.x = x * 50;
-                    backgroundTile.y = y * 50;
-                    gameEngine.containers.background.addChild(backgroundTile.clone());
-
-                    breakableTile.x = x * 50;
-                    breakableTile.y = y * 50;
-                    gameEngine.containers.backgroundDestructable.addChild(breakableTile.clone());
-                }
-            });
-        });
-
-        gameEngine.stage.update();
 
     },
     loadPlayer: function () {
@@ -614,6 +639,9 @@ GameEngine = Class.extend({
         createjs.Sound.play('game-over','none',2200);
         gameEngine.player.alive=false;
         if(gameEngine.player.sprite.currentAnimation!=='die'){
+            if(multiplayer) {
+                server.sendPlayerDied(this.player.position, 'die');
+            }
             gameEngine.player.sprite.gotoAndPlay('die');
             gameEngine.player.sprite.on('animationend',function(){
                 gameEngine.player.sprite.stop();

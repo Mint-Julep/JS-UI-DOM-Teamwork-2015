@@ -10,6 +10,17 @@ var UserSchema=new Schema({
     token:String
 });
 
+var MapSchema = new Schema({
+    id:Number,
+    name:String,
+    map:Array,
+    tiles:Object,
+    initialPosition:Object,
+    bonuses:Array,
+    bots:Array
+});
+
 mongoose.model('users',UserSchema);
+mongoose.model('maps',MapSchema);
 
 

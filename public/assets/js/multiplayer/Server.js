@@ -26,20 +26,45 @@ var Server = (function () {
                 level:playerLevel
             });
         },
-        playerDied: function () {
-            socket.emit('player-died', {
+        sendPlayerDied: function (playerPosition,animation) {
+            socket.emit('player-moved', {
                 id: playerID,
+                newPosition: playerPosition,
+                animation:animation,
                 level:playerLevel
             });
         },
         sendLevel:function(levelId){
-            console.log('sent info about my position');
+            console.log('sent info about my initial position');
             playerLevel='level'+levelId;
+
+            console.log('map im sending',levelHandler.data[levelHandler.currentLevel])
 
             socket.emit('player-level',{
                 playerId:playerID,
-                levelId:levelId
+                levelId:levelId,
+                map:levelHandler.data[levelHandler.currentLevel]
             });
+        },
+        getAllMaps:function(callback){
+            socket.emit('get-all-maps',{},function(error,allMaps){
+                if(error){
+                    console.log(error);
+                    return;
+                } else {
+                    callback(allMaps);
+                }
+
+            });
+        },
+        getCurrentLevel:function(levelName,callback){
+            socket.emit('get-level',{level:levelName},callback);
+        },
+        sendMapUpdate:function(newMap){
+            socket.emit('map-changed',{level:playerLevel,newMap:newMap});
+        },
+        sendBonusUpdate:function(newBonuses){
+            socket.emit('bonus-changed',{level:playerLevel,newBonuses:newBonuses});
         },
         startListeningFromServer:function(){
             socket.on('other-player-joined',function(otherPlayerId){
@@ -74,12 +99,20 @@ var Server = (function () {
             });
 
             socket.on('other-player-moved',function(clientData){
-                console.log('op-moves',clientData);
                 var otherPlayerSprite = gameEngine.findOtherPlayerById(clientData.id);
 
                 if(otherPlayerSprite && otherPlayerSprite!==-1){
                     var newPosition = clientData.newPosition,
                         animation = clientData.animation;
+
+                    if(animation==='die'){
+                        otherPlayerSprite.position =  newPosition;
+                        otherPlayerSprite.setTransform(newPosition.x,newPosition.y,1.2,1.2);
+                        otherPlayerSprite.gotoAndPlay('die');
+                        otherPlayerSprite.on('animationend',function(){
+                            this.stop();
+                        });
+                    }
 
 
                     otherPlayerSprite.position =  newPosition;
@@ -98,12 +131,16 @@ var Server = (function () {
 
             socket.on('bomb-placed',function(bombPosition){
                 var otherUserBomb =  new Bomb(1,{x:0,y:0},bombPosition.extendedExplosion);
+                gameEngine.levelData.map[(bombPosition.bombPosition.y / 50 | 0)][(bombPosition.bombPosition.x / 50 | 0)] = 'b';
                 otherUserBomb.sprite.setTransform(bombPosition.bombPosition.x,bombPosition.bombPosition.y);
                 gameEngine.containers.otherPlayersBombs.addChild(otherUserBomb.sprite);
                 otherUserBomb.activate( gameEngine.containers.otherPlayersBombs);
             });
 
-
+            socket.on('bonus-changed',function(newBonuses){
+                console.log('will remove bonuses',newBonuses);
+                bonusHandler.changeBonuses(newBonuses);
+            });
         }
     });
 
