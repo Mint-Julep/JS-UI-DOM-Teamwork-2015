@@ -348,6 +348,9 @@ GameEngine = Class.extend({
             {id: "tile-snow", src: "/assets/img/snow.png"},
             {id: "tile-ice", src: "/assets/img/ice.png"},
             {id: "tile-crate", src: "/assets/img/crate.png"},
+            {id: "tile-darkgrass", src: "/assets/img/darkgrass.png"},
+            {id: "tile-box", src: "/assets/img/box.png"},
+            {id: "tile-brickwall", src: "/assets/img/brickwall.png"},
             {id: "more-speed", src: "/assets/img/moreSpeed.png"},
             {id: "more-bombs", src: "/assets/img/moreBombs.png"},
             {id: "more-explosion", src: "/assets/img/moreExplosionRange.png"}
