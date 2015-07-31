@@ -37,14 +37,20 @@ var Bomb = (function () {
             {x: 0, y: -50},
             {x: 0, y: 50}
         ],
+        extendedCoordinatesToCheck:[
+            {x:-50,y:50},
+            {x:50,y:50},
+            {x:-50,y:-50},
+            {x:50,y:-50}
+        ],
 
         init: function (id, position,extendedExplosion) {
-            if(!extendedExplosion){
-                extendedExplosion = gameEngine.player.extendedExplosion;
-            }
 
             if(extendedExplosion){
-                this.coordinatesToCheck.push({x:-50,y:50},{x:50,y:50},{x:-50,y:-50},{x:50,y:-50})
+                coordinatesToCheck = this.coordinatesToCheck.concat(this.extendedCoordinatesToCheck);
+
+            }else {
+                coordinatesToCheck = this.coordinatesToCheck;
             }
 
             if (!sprite) {
@@ -131,9 +137,9 @@ var Bomb = (function () {
             this.killPlayer(x,y);
         },
         removeBreakableTiles:function(x,y){
-            for(var i=0;i<this.coordinatesToCheck.length;i+=1){
-                var xToCheck = x+this.coordinatesToCheck[i].x,
-                    yToCheck = y+this.coordinatesToCheck[i].y;
+            for(var i=0;i<coordinatesToCheck.length;i+=1){
+                var xToCheck = x+coordinatesToCheck[i].x,
+                    yToCheck = y+coordinatesToCheck[i].y;
                 var toRemove = gameEngine.containers.backgroundDestructable.getObjectUnderPoint(xToCheck, yToCheck);
 
                 if (gameEngine.containers.backgroundDestructable.removeChild(toRemove)) {
@@ -145,15 +151,15 @@ var Bomb = (function () {
             }
         },
         killBots:function(x,y){
-            for(var i=0;i<this.coordinatesToCheck.length;i+=1){
+            for(var i=0;i<coordinatesToCheck.length;i+=1){
                 var additionalCoordinatesToCheck = [{x:0,y:15},{x:15,y:0},{x:15,y:30},{x:30,y:15}];
 
 
                 for(var j=0;j<additionalCoordinatesToCheck.length;j++) {
 
 
-                    var xToCheck = x + this.coordinatesToCheck[i].x + additionalCoordinatesToCheck[j].x+4,
-                        yToCheck = y + this.coordinatesToCheck[i].y + additionalCoordinatesToCheck[j].y+4;
+                    var xToCheck = x + coordinatesToCheck[i].x + additionalCoordinatesToCheck[j].x+4,
+                        yToCheck = y + coordinatesToCheck[i].y + additionalCoordinatesToCheck[j].y+4;
                     var toRemove = gameEngine.containers.bot.getObjectUnderPoint(xToCheck, yToCheck);
 
                     if(toRemove){
@@ -173,14 +179,14 @@ var Bomb = (function () {
             }
         },
         killPlayer:function(x,y){
-            for(var i=0;i<this.coordinatesToCheck.length;i+=1){
+            for(var i=0;i<coordinatesToCheck.length;i+=1){
                 var additionalCoordinatesToCheck = [{x:0,y:15},{x:15,y:0},{x:15,y:30},{x:30,y:15}];
 
                 for(var j=0;j<additionalCoordinatesToCheck.length;j++) {
 
 
-                    var xToCheck = x + this.coordinatesToCheck[i].x + additionalCoordinatesToCheck[j].x+4,
-                        yToCheck = y + this.coordinatesToCheck[i].y + additionalCoordinatesToCheck[j].y+4;
+                    var xToCheck = x + coordinatesToCheck[i].x + additionalCoordinatesToCheck[j].x+4,
+                        yToCheck = y + coordinatesToCheck[i].y + additionalCoordinatesToCheck[j].y+4;
                     var toRemove = gameEngine.containers.player.getObjectUnderPoint(xToCheck, yToCheck);
 
                     if(toRemove){

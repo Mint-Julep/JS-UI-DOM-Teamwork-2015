@@ -35,10 +35,8 @@ var Server = (function () {
             });
         },
         sendLevel:function(levelId){
-            console.log('sent info about my initial position');
             playerLevel='level'+levelId;
 
-            console.log('map im sending',levelHandler.data[levelHandler.currentLevel])
 
             socket.emit('player-level',{
                 playerId:playerID,
@@ -46,10 +44,12 @@ var Server = (function () {
                 map:levelHandler.data[levelHandler.currentLevel]
             });
         },
+        sendDisconnect:function(){
+          socket.disconnect();
+        },
         getAllMaps:function(callback){
             socket.emit('get-all-maps',{},function(error,allMaps){
                 if(error){
-                    console.log(error);
                     return;
                 } else {
                     callback(allMaps);
@@ -86,7 +86,6 @@ var Server = (function () {
             });
 
             socket.on('current-players',function(currentPlayers){
-                console.log('cp',currentPlayers);
 
                 for(var i=0;i<currentPlayers.length;i++){
 
@@ -142,7 +141,6 @@ var Server = (function () {
             });
 
             socket.on('bonus-changed',function(newBonuses){
-                console.log('will remove bonuses',newBonuses);
                 bonusHandler.changeBonuses(newBonuses);
             });
         }

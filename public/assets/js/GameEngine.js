@@ -168,7 +168,7 @@ GameEngine = Class.extend({
                     gameEngine.player.avaliableBombs--;
                     this.keysQueue.push('space');
 
-                    var bomb = new Bomb(1, {x: 0, y: 0});
+                    var bomb = new Bomb(1, {x: 0, y: 0},gameEngine.player.extendedExplosion);
                     var bombX = this.player.position.x + 12,
                         bombY = this.player.position.y + 18;
 
@@ -478,12 +478,9 @@ GameEngine = Class.extend({
                 server.sendLevel(gameEngine.levelData.id);
             }
 
-            console.log('my level data',gameEngine.levelData);
             var color;
 
-            console.log('my level data tile',gameEngine.levelData.tiles);
             //tiles =gameEngine.levelData.tiles;
-            console.log('background',gameEngine.levelData.tiles.background);
             var backgroundTile = new createjs.Bitmap(gameEngine.filesQueue.getResult(gameEngine.levelData.tiles.background));
             var wallTile = new createjs.Bitmap(gameEngine.filesQueue.getResult(gameEngine.levelData.tiles.wall));
             var breakableTile = new createjs.Bitmap(gameEngine.filesQueue.getResult(gameEngine.levelData.tiles.breakable));
@@ -536,7 +533,9 @@ GameEngine = Class.extend({
             gameEngine.stage.update();
 
             gameEngine.loadPlayer();
-            gameEngine.loadBot();
+            if(!multiplayer) {
+                gameEngine.loadBot();
+            }
             $('#levelselectscreen').hide();
             $('#gamecanvas').show();
 
@@ -557,7 +556,6 @@ GameEngine = Class.extend({
     },
     loadBot: function () {
         for(var i=0;i<this.levelData.bots.length;i++) {
-            console.log(this.levelData.bots,this.levelData.bots[i]);
             var initialX = this.levelData.bots[i].x*50;
             var initialY = this.levelData.bots[i].y*50;
             var newBot = new Bot(gameEngine.id++, {x: 0, y: 0}, '/assets/img/bot2.png');
@@ -656,6 +654,8 @@ GameEngine = Class.extend({
     gameOver: function(){
       var $endingScreen =  $('#endingscreen');
         $endingScreen.fadeIn();
+
+        server.sendDisconnect();
 
         $('#playAgain').on('click', function(){
             window.location.reload();

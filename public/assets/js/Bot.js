@@ -110,7 +110,6 @@ Bot = Entity.extend({
 
 		x = (x + 1) | 0;
 		y = (y + 1) | 0;
-		//	console.log(x+'  '+y);
 
 		if (direction === "down") {
 			if (y < 554 && gameEngine.isMapEmptyAt(x + 4, y + 42) && gameEngine.isMapEmptyAt(x + 22, y + 42)) {

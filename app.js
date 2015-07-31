@@ -30,6 +30,7 @@ app.get('/game/:typeOfGame', function(req, res,next) {
     }else if(typeOfGame==='multiplayer'){
         var userId=req.cookies.bombGunner_userId;
         var token=req.cookies.bombGunner_token;
+        console.log('user joining',userId,token);
         userData.verifyUserToken({id:userId,token:token},function(){
             res.sendFile(__dirname+'/public/game-multiplayer.html');
         },function(){

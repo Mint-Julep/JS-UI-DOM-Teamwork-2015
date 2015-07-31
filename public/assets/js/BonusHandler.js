@@ -57,8 +57,6 @@ BonusHandler = Class.extend({
             }
         });
 
-        console.log('current bonuses',gameEngine.levelData.bonuses);
-        console.log('all bonuses to remove ',bonusToRemove);
 
 
         if(bonusToRemove){
