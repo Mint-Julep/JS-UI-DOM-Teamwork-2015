@@ -53,6 +53,8 @@ Apart from the things adopted from the classical game, our version also includes
     ```
     http://localhost:3000/
     ```
+    
+7. Or you can directly run it at http://bombgunner-git-hackohackob.c9.io/    
 
 ## Technologies
 
@@ -61,15 +63,16 @@ Apart from the things adopted from the classical game, our version also includes
 - JavaScript
    - Node.js
    - jQuery
-   - CreateJS (TweenJS, SoundJS, PreloadJS)
+   - CreateJS (EaselJS, SoundJS, PreloadJS)
 
 ## Participants
 
-* Nikolay Dzhurov (nikk-dzhurov)
+
 * Atanas Atanasov (hackohackob)
+* Toma Nikolov (TomaNikolov)
+* Nikolay Dzhurov (nikk-dzhurov)
 * Lyudmil Nikodimov (lnikod4s)
 * Ivaylo Arnaudov (r1f)
-* Toma Nikolov (TomaNikolov)
 * Vasil Todorov (vTodorov)
 
 ## Preview
