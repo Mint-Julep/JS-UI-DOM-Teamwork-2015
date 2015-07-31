@@ -56,13 +56,13 @@ GameEngine = Class.extend({
     },
     update: function () {
         if(gameEngine.player.alive) {
-            for(var i=0;i<gameEngine.bots.length;i++) {
-                if (gameEngine.bots[i].alive) {
-                    gameEngine.bots[i].chooseDirection();
-                    gameEngine.bots[i].move();
-                    this.checkCollisions();
+                for (var i = 0; i < gameEngine.bots.length; i++) {
+                    if (gameEngine.bots[i].alive) {
+                        gameEngine.bots[i].chooseDirection();
+                        gameEngine.bots[i].move();
+                        this.checkCollisions();
+                    }
                 }
-            }
             gameEngine.handleInput();
         }else {
             if(gameEngine.player.sprite.currentAnimation!=='die'){
@@ -318,10 +318,10 @@ GameEngine = Class.extend({
             }]);
 
         librariesQueue.addEventListener('complete', this.loadFiles);
-        librariesQueue.addEventListener('progress', function (e) {
-            $('.loadie').html('Loading libraries');
-            $('#gamecontainer').loadie(e.progress);
-        });
+        //librariesQueue.addEventListener('progress', function (e) {
+        //    $('.loadie').html('Loading libraries');
+        //    $('#gamecontainer').loadie(e.progress);
+        //});
     },
     loadFiles: function () {
         gameEngine.filesQueue = new createjs.LoadQueue();
@@ -385,7 +385,7 @@ GameEngine = Class.extend({
             gameEngine.player = new Player(server.playerID, {x: 0, y: 0}, '/assets/img/sprite-fixed2.png');
             gameEngine.otherPlayers = [];
         } else {
-            gameEngine.player = new Player(gameEngine.id++, {x: 0, y: 0}, '/assets/img/sprite-fixed.png');
+            gameEngine.player = new Player(gameEngine.id++, {x: 0, y: 0}, '/assets/img/sprite-fixed2.png');
         }
 
 
@@ -540,7 +540,7 @@ GameEngine = Class.extend({
             $('#levelselectscreen').hide();
             $('#gamecanvas').show();
 
-            //createjs.Sound.play('gameplay-sound', "none", 0, 0, -1, 1, 0, null, 21945);
+            createjs.Sound.play('gameplay-sound', "none", 0, 0, -1, 1, 0, null, 21945);
 
             gameEngine.main();
         });
@@ -563,7 +563,8 @@ GameEngine = Class.extend({
             var newBot = new Bot(gameEngine.id++, {x: 0, y: 0}, '/assets/img/bot2.png');
             newBot.position.x = initialX;
             newBot.position.y = initialY;
-            newBot.sprite.setTransform(initialX, initialY, 5, 5);
+            newBot.sprite.setTransform(initialX, initialY, 1.25, 1.25);
+            newBot.sprite.gotoAndStop('facein');
 
             gameEngine.containers.bot.addChild(newBot.sprite);
             gameEngine.bots.push(newBot)
@@ -647,11 +648,14 @@ GameEngine = Class.extend({
                 gameEngine.player.sprite.stop();
             });
         }
-        gameEngine.gameOver()
+
+        setTimeout(function(){
+            gameEngine.gameOver();
+        },3000);
     },
     gameOver: function(){
       var $endingScreen =  $('#endingscreen');
-        $endingScreen.show();
+        $endingScreen.fadeIn();
 
         $('#playAgain').on('click', function(){
             window.location.reload();

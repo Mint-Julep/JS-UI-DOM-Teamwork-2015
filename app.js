@@ -89,12 +89,10 @@ io.on('connection', function(client) {
     });
 
     client.on('player-level',function(clientData){
-        console.log('my levels',levels);
         if(utils.getPlayingUserById(clientData.playerId,false,true,levels)!==-1){
             client.broadcast.emit('player-disconnected',clientData.playerId);
         }
 
-        console.log('map from player:',clientData.map);
         var playerId = clientData.playerId;
         var level='level'+clientData.levelId;
         if(levels.indexOf(level)===-1){
@@ -115,8 +113,9 @@ io.on('connection', function(client) {
             client.broadcast.to(level).emit('other-player-joined',playerId);
         }
 
+        console.log('player joined in room ',level);
+
         client.emit('current-players',levels[level].players);
-        console.log('server map',levels[level])
 
         levels[level].players.push({
             id:clientData.playerId,
@@ -162,7 +161,6 @@ io.on('connection', function(client) {
     client.on('get-level',function(data,callback){
         for(var i=0;i<levels.length;i++){
             if(levels[i]===data.level){
-                console.log('all good, returning',levels[levels[i]])
                 callback(0,levels[levels[i]]);
                 return;
             }
@@ -178,11 +176,8 @@ io.on('connection', function(client) {
         for(var i=0;i<levels.length;i++){
             if(levels[i]===level){
                 levels[levels[i]].map.map = newMap;
-                console.log('map changed successfully');
             }
         }
-
-         console.log(levels[level]);
     });
 
     client.on('bonus-changed',function(data){
@@ -192,13 +187,12 @@ io.on('connection', function(client) {
         for(var i=0;i<levels.length;i++){
             if(levels[i]===level){
                 levels[levels[i]].map.bonuses = newBonuses;
-                console.log('map bonuses changed successfully');
             }
         }
 
         client.broadcast.to(data.level).emit('bonus-changed',newBonuses);
 
-    })
+    });
 
 });
 

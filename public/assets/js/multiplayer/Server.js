@@ -72,12 +72,10 @@ var Server = (function () {
             });
 
             socket.on('player-disconnected',function(otherPlayerId){
-                console.log('player-disconnected',otherPlayerId,gameEngine.otherPlayers);
-                if(otherPlayerId==playerID){
+                if(otherPlayerId===playerID){
                     window.location.replace(window.location.origin);
                     return;
                 }
-                var otherPlayerSpriteIndex;
 
                 gameEngine.containers.otherPlayers.removeChild(gameEngine.containers.otherPlayers.getChildByName('user-'+otherPlayerId));
                 for(var i=0;i<gameEngine.otherPlayers.length;i++){
@@ -85,8 +83,6 @@ var Server = (function () {
                         gameEngine.otherPlayers.splice(i,1);
                     }
                 }
-
-                console.log(gameEngine.otherPlayers);
             });
 
             socket.on('current-players',function(currentPlayers){
@@ -110,7 +106,15 @@ var Server = (function () {
                         otherPlayerSprite.setTransform(newPosition.x,newPosition.y,1.2,1.2);
                         otherPlayerSprite.gotoAndPlay('die');
                         otherPlayerSprite.on('animationend',function(){
+                            gameEngine.containers.otherPlayers.removeChild(otherPlayerSprite);
+                            for(var i=0;i<gameEngine.otherPlayers.length;i++){
+                                if(gameEngine.otherPlayers[i].sprite==otherPlayerSprite){
+                                    gameEngine.otherPlayers.splice(i,1);
+                                }
+                            }
+
                             this.stop();
+
                         });
                     }
 

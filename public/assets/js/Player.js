@@ -106,7 +106,7 @@ Player = Entity.extend({
         y=(y+1)|0;
 
         if(direction==="down"){
-            if(y<564 && gameEngine.isMapEmptyAt(x+4,y+42) && gameEngine.isMapEmptyAt(x+22,y+42)){
+            if(y<564 && gameEngine.isMapEmptyAt(x+4,y+45) && gameEngine.isMapEmptyAt(x+22,y+45)){
                 return true;
             } else {
                 return false;

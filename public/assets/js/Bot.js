@@ -67,6 +67,10 @@ Bot = Entity.extend({
 		if (this.canMove('left')) directions.push('left');
 		if (this.canMove('right')) directions.push('right');
 
+		if(this.sprite.paused){
+			this.move();
+		}
+
 		counter = directions.length;
 
 		if ((Math.random() * 300 | 0) === 5) {

@@ -84,7 +84,7 @@ Utils = Class.extend({
         }
 
         return -1;
-	}
+    }
 });
 
 utils = new Utils();
